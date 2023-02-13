@@ -1,7 +1,7 @@
-﻿namespace UniversityClassLibrary;
+﻿namespace UniversityClassLibrary.DynamicArray;
 
 public class DynamicArraySizeComparer<T> : IComparer<IDynamicArray<T>>
-    where T : IComparable<T>, new()
+    where T : IComparable<T>
 {
     public int Compare(IDynamicArray<T>? left, IDynamicArray<T>? right)
     {

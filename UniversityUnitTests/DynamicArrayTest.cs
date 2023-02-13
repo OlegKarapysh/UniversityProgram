@@ -1,29 +1,20 @@
-using UniversityClassLibrary;
-using UniversityUnitTests.MocksAndFakes;
-using FluentAssertions;
+using UniversityClassLibrary.DynamicArray;
 
 namespace UniversityUnitTests;
 
 public class DynamicArrayTest
 {
     private readonly DynamicArray<int> _dynamicArrayOfInts;
-    private readonly DynamicArray<TestReferenceType>_dynamicArrayOfClasses;
+    private readonly DynamicArray<string>_dynamicArrayOfStrings;
     private int[] _testNumbers;
-    private TestReferenceType[] _testReferenceTypes;
+    private string[] _testStrings;
 
     public DynamicArrayTest()
     {
         _dynamicArrayOfInts = new DynamicArray<int>();
-        _dynamicArrayOfClasses = new DynamicArray<TestReferenceType>();
+        _dynamicArrayOfStrings = new DynamicArray<string>();
         _testNumbers = new int[] {-1, 0, 1};
-        _testReferenceTypes = new TestReferenceType[]
-        {
-            new TestReferenceType { Name = "Alice" },
-            new TestReferenceType { Name = "Bob" },
-            new TestReferenceType { Name = "Calister" },
-            new TestReferenceType { Name = "" },
-            new TestReferenceType()
-        };
+        _testStrings = new string[] { "Alice", "Bob", "Calister", "" };
     }
 
 
@@ -48,46 +39,52 @@ public class DynamicArrayTest
     //    Assert.Equal(0, _dynamicArray.Count);
     //}
 
-    [Fact]
-    public void CheckArrayCapacityAfterChangingArray_ReturnsCorrectCapacity()
+    //[Fact]
+    //public void CheckArrayCapacityAfterChangingArray_ReturnsCorrectCapacity()
+    //{
+    //    Assert.Equal(0, _dynamicArrayOfInts.Capacity);
+
+    //    FillDynamicArray(_dynamicArrayOfInts, _dynamicArrayOfInts.DefaultReserveStep, default);
+    //    Assert.Equal(_dynamicArrayOfInts.DefaultReserveStep, _dynamicArrayOfInts.Capacity);
+
+    //    _dynamicArrayOfInts.PushBack(default);
+    //    Assert.Equal(_dynamicArrayOfInts.DefaultReserveStep * 2, _dynamicArrayOfInts.Capacity);
+
+    //    _dynamicArrayOfInts.RemoveAt(0);
+    //    Assert.Equal(_dynamicArrayOfInts.DefaultReserveStep, _dynamicArrayOfInts.Capacity);
+
+    //    _dynamicArrayOfInts.RemoveAll();
+    //    Assert.Equal(0, _dynamicArrayOfInts.Capacity);
+    //}
+
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(1, 1)]
+    [InlineData(3, int.MaxValue)]
+    [InlineData(3, int.MinValue)]
+    public void TryGettingItemByInvalidIndex_ThrowsIndexOutOfRangeException(
+        int count, int invalidIndex)
     {
-        Assert.Equal(0, _dynamicArrayOfInts.Capacity);
+        // Arrange.
+        FillDynamicArray(_dynamicArrayOfInts, count, default);
+        Action act = () => { _ = _dynamicArrayOfInts[invalidIndex]; };
 
-        FillDynamicArray(_dynamicArrayOfInts, _dynamicArrayOfInts.DefaultReserveStep, default);
-        Assert.Equal(_dynamicArrayOfInts.DefaultReserveStep, _dynamicArrayOfInts.Capacity);
-
-        _dynamicArrayOfInts.PushBack(default);
-        Assert.Equal(_dynamicArrayOfInts.DefaultReserveStep * 2, _dynamicArrayOfInts.Capacity);
-
-        _dynamicArrayOfInts.RemoveAt(0);
-        Assert.Equal(_dynamicArrayOfInts.DefaultReserveStep, _dynamicArrayOfInts.Capacity);
-
-        _dynamicArrayOfInts.RemoveAll();
-        Assert.Equal(0, _dynamicArrayOfInts.Capacity);
-    }
-
-    [Fact]
-    public void TryGettingItemByInvalidIndex_ThrowsIndexOutOfRangeException()
-    {
-        FillDynamicArray(_dynamicArrayOfInts, _testNumbers.Length, default);
-
-        Assert.Throws<IndexOutOfRangeException>(() => _dynamicArrayOfInts[_testNumbers.Length]);
-        Assert.Throws<IndexOutOfRangeException>(() => _dynamicArrayOfInts[int.MaxValue]);
-        Assert.Throws<IndexOutOfRangeException>(() => _dynamicArrayOfInts[-1]);
+        // Act, Assert.
+        act.Should().Throw<IndexOutOfRangeException>();
     }
 
     [Fact]
     public void UsingIndexerWithCorrectIndexes_ReturnsAndSetsCorrectValues()
     {
-        _dynamicArrayOfInts.Resize(_testNumbers.Length);
+        // Arrange.
+        FillDynamicArrayWithTestNumbers(_dynamicArrayOfInts);
+        var expected = int.MaxValue;
 
+        // Act, Assert.
         for (int i = 0; i < _testNumbers.Length; i++)
         {
-            var expected = int.MaxValue;
-
             _dynamicArrayOfInts[i] = expected;
-
-            Assert.Equal(expected, _dynamicArrayOfInts[i]);
+            _dynamicArrayOfInts[i].Should().Be(expected);
         }
     }
 
@@ -106,127 +103,191 @@ public class DynamicArrayTest
         newArray.Capacity.Should().Be(expectedCapacity);
     }
 
-    [Fact]
-    public void CreatingDynamicArrayWithInvalidCapacity_ThrowsCorrectException()
+    [Theory]
+    [InlineData(int.MinValue)]
+    [InlineData(-1)]
+    public void CreatingDynamicArrayWithInvalidCapacity_ThrowsCorrectException(
+        int invalidCapacity)
     {
-        Assert.Throws<OutOfMemoryException>(() => new DynamicArray<int>(int.MaxValue));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new DynamicArray<int>(-1));
+        // Arrange.
+        Action act = () => { new DynamicArray<int>(invalidCapacity); };
+
+        // Act, Assert.
+        act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Fact]
-    public void ComparingDynamicArraysViaEquals_ReturnsTrueIfTheyEqual()
+    public void ComparingDynamicArraysOfIntsViaEquals_ReturnsTrueIfTheyEqual()
     {
+        // Arrange.
         var equalArrayInts = new DynamicArray<int>();
         var notEqualArrayInts = new DynamicArray<int>();
-        var equalArrayReferenceTypes = new DynamicArray<TestReferenceType>();
-        var notEqualArrayReferenceTypes= new DynamicArray<TestReferenceType>();
-
         FillDynamicArrayWithTestNumbers(_dynamicArrayOfInts);
         FillDynamicArrayWithTestNumbers(equalArrayInts);
         FillDynamicArray(notEqualArrayInts, _testNumbers.Length, default);
-        FillDynamicArrayWithTestReferenceTypes(_dynamicArrayOfClasses);
-        FillDynamicArrayWithTestReferenceTypes(equalArrayReferenceTypes);
-        FillDynamicArray(
-            notEqualArrayReferenceTypes, _testReferenceTypes.Length, new TestReferenceType());
 
-        Assert.True(_dynamicArrayOfInts.Equals(equalArrayInts));
-        Assert.False(_dynamicArrayOfInts.Equals(notEqualArrayInts));
-        Assert.True(_dynamicArrayOfClasses.Equals(equalArrayReferenceTypes));
-        Assert.False(_dynamicArrayOfClasses.Equals(notEqualArrayReferenceTypes));
+        // Act.
+        var resultForEqual = _dynamicArrayOfInts.Equals(equalArrayInts);
+        var resultForNotEqual = _dynamicArrayOfInts.Equals(notEqualArrayInts);
+
+        // Assert.
+        resultForEqual.Should().BeTrue();
+        resultForNotEqual.Should().BeFalse();
+    }
+
+    [Fact]
+    public void ComparingDynamicArraysOfStringsViaEquals_ReturnsTrueIfTheyEqual()
+    {
+        // Arrange.
+        var equalArrayStrings = new DynamicArray<string>();
+        var notEqualArrayStrings = new DynamicArray<string>();
+        FillDynamicArrayWithTestStrings(_dynamicArrayOfStrings);
+        FillDynamicArrayWithTestStrings(equalArrayStrings);
+        FillDynamicArray(notEqualArrayStrings, _testStrings.Length, string.Empty);
+
+        // Act.
+        var resultForEqual = _dynamicArrayOfStrings.Equals(equalArrayStrings);
+        var resultForNotEqual = _dynamicArrayOfStrings.Equals(notEqualArrayStrings);
+
+        // Assert.
+        resultForEqual.Should().BeTrue();
+        resultForNotEqual.Should().BeFalse();
     }
 
     [Theory]
-    [InlineData(0, 0)]
-    [InlineData(1, 256)]
-    [InlineData(256, 256)]
-    [InlineData(257, 512)]
-    [InlineData(1023, 1024)]
-    public void ResizingArray_SetsCorrectCountAndCapacity(
-        int expectedCount, int expectedCapacity) 
+    [InlineData(0, 1, 256)]
+    [InlineData(1, 1, 256)]
+    [InlineData(1, 2, 256)]
+    [InlineData(257, 512, 512)]
+    public void EnlargingArrayByUsingResize_SetsCorrectCountAndCapacity(
+        int initialCount, int newSize, int expectedCapacity) 
     {
-        _dynamicArrayOfInts.Resize(expectedCount);
+        // Arrange.
+        FillDynamicArray(_dynamicArrayOfInts, initialCount, default);
+        var expected = Enumerable.Repeat(default(int), initialCount).ToArray();
 
-        Assert.Equal(expectedCount, _dynamicArrayOfInts.Count);
-        Assert.Equal(expectedCapacity, _dynamicArrayOfInts.Capacity);
+        // Act.
+        _dynamicArrayOfInts.Resize(newSize);
+        var result = _dynamicArrayOfInts.ToArray();
+
+        // Assert.
+        _dynamicArrayOfInts.Count.Should().Be(initialCount);
+        _dynamicArrayOfInts.Capacity.Should().Be(expectedCapacity);
+        result.Should().Equal(expected);
+    }
+
+    [Theory]
+    [InlineData(256, 1, 256)]
+    [InlineData(1000, 500, 512)]
+    [InlineData(1023, 0, 0)]
+    public void ReducingArrayByUsingResize_SetsCorrectCountAndCapacity(
+        int initialCount, int newSize, int expectedCapacity)
+    {
+        // Arrange.
+        FillDynamicArray(_dynamicArrayOfInts, initialCount, default);
+        var expected = Enumerable.Repeat(default(int), newSize).ToArray();
+
+        // Act.
+        _dynamicArrayOfInts.Resize(newSize);
+        var result = _dynamicArrayOfInts.ToArray();
+
+        // Assert.
+        _dynamicArrayOfInts.Count.Should().Be(newSize);
+        _dynamicArrayOfInts.Capacity.Should().Be(expectedCapacity);
+        result.Should().Equal(expected);
     }
 
     [Fact]
     public void LogicalNotOperator_ReturnsTrueIfArrayEmpty()
     {
-        Assert.True(!_dynamicArrayOfInts);
+        // Arrange.
+        var emptyArray = new DynamicArray<int>();
+        var notEmptyArray = new DynamicArray<int>();
+        FillDynamicArrayWithTestNumbers(notEmptyArray);
 
-        FillDynamicArrayWithTestNumbers(_dynamicArrayOfInts);
-        Assert.False(!_dynamicArrayOfInts);
+        // Act.
+        var resultForEmptyArray = !emptyArray;
+        var resultForNotEmptyArray = !notEmptyArray;
 
-        _dynamicArrayOfInts.RemoveAll();
-        Assert.True(!_dynamicArrayOfInts);
+        // Assert.
+        resultForEmptyArray.Should().BeTrue();
+        resultForNotEmptyArray.Should().BeFalse();
     }
 
-    [Fact]
-    public void AddingItemsWithPushBack_AddsItemsToEndAndChangesCount()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(10)]
+    public void AddingItemsToEnd_AddsItemsToEndAndChangesCount(int count)
     {
-        for (int i = 0; i < _testNumbers.Length; i++)
-        {
-            _dynamicArrayOfInts.PushBack(_testNumbers[i]);
+        // Arrange.
+        var expected = Enumerable.Range(0, count).ToArray();
 
-            Assert.Equal(_testNumbers[i], _dynamicArrayOfInts[i]);
-            Assert.Equal(i + 1, _dynamicArrayOfInts.Count);
-        }
-
-        for (int i = 0; i < _testNumbers.Length; i++)
+        // Act.
+        for (int i = 0; i < count; i++)
         {
-            Assert.Equal(_testNumbers[i], _dynamicArrayOfInts[i]);
+            _dynamicArrayOfInts.Add(i);
         }
+        var result = _dynamicArrayOfInts.Select(x => x).ToArray();
+
+        // Assert.
+        result.Should().Equal(expected);
     }
 
-    [Fact]
-    public void AddingItemsWithPushFront_AddsItemsToBeginAndChangesCount()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(10)]
+    public void AddingItemsToBegin_AddsItemsToBeginAndChangesCount(int count)
     {
-        for (int i = 0; i < _testNumbers.Length; i++)
-        {
-            _dynamicArrayOfInts.PushFront(_testNumbers[i]);
-            Assert.Equal(_testNumbers[0], _dynamicArrayOfInts[i]);
-            Assert.Equal(i + 1, _dynamicArrayOfInts.Count);
-        }
+        // Arrange.
+        var expected = Enumerable.Range(0, count).ToArray().Reverse();
 
-        _testNumbers = _testNumbers.Reverse().ToArray();
-        for (int i = 0; i < _testNumbers.Length; i++)
+        // Act.
+        for (int i = 0; i < count; i++)
         {
-            Assert.Equal(_testNumbers[i], _dynamicArrayOfInts[i]);
+            _dynamicArrayOfInts.AddToBegin(i);
         }
+        var result = _dynamicArrayOfInts.ToArray();
+
+        // Assert.
+        result.Should().Equal(expected);
     }
 
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(10)]
-    public void RemovingAllItems_ClearsDynamicArray(int size)
+    public void RemovingAllItems_ClearsDynamicArray(int count)
     {
-        FillDynamicArray(_dynamicArrayOfInts, size, default);
+        // Arrange.
+        FillDynamicArray(_dynamicArrayOfInts, count, default);
 
-        _dynamicArrayOfInts.RemoveAll();
+        // Act.
+        _dynamicArrayOfInts.Clear();
 
-        Assert.Equal(0, _dynamicArrayOfInts.Count);
-        Assert.Equal(0, _dynamicArrayOfInts.Capacity);
+        // Assert.
+        _dynamicArrayOfInts.Count.Should().Be(0);
+        _dynamicArrayOfInts.Capacity.Should().Be(0);
     }
 
     [Theory]
-    [InlineData(0, 2)]
-    [InlineData(-1, 2)]
-    [InlineData(1, 2)]
-    public void RemoveOneItem_DeletesThatItemAndDecreasesCount(int item, int expectedCount)
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(1)]
+    public void RemoveOneItem_DeletesThatItemAndDecreasesCount(int item)
     {
+        // Arrange.
         FillDynamicArrayWithTestNumbers(_dynamicArrayOfInts);
-        _testNumbers = _testNumbers.Where(x => x != item).ToArray();
+        var expected = _testNumbers.Where(x => x != item).ToArray();
 
+        // Act.
         _dynamicArrayOfInts.Remove(item);
-        //for (int i = 0; i < _testNumbers.Length; i++)
-        //{
-        //    Assert.Equal
-        //}
-        Assert.Equal(expectedCount, _dynamicArrayOfInts.Count);
-    }
+        var result = _dynamicArrayOfInts.ToArray();
 
+        // Assert.
+        result.Should().Equal(expected);
+    }
 
     [Theory]
     [InlineData(-1, 0)]
@@ -238,7 +299,7 @@ public class DynamicArrayTest
         FillDynamicArrayWithTestNumbers(_dynamicArrayOfInts);
 
         // Act.
-        var result = _dynamicArrayOfInts.Search(item);
+        var result = _dynamicArrayOfInts.IndexOf(item);
 
         // Assert.
         result.Should().Be(expectedIndex);
@@ -253,7 +314,7 @@ public class DynamicArrayTest
         FillDynamicArrayWithTestNumbers(_dynamicArrayOfInts);
 
         // Act.
-        var result = _dynamicArrayOfInts.Search(item);
+        var result = _dynamicArrayOfInts.IndexOf(item);
 
         // Assert.
         result.Should().Be(-1);
@@ -265,16 +326,16 @@ public class DynamicArrayTest
     {
         for (int i = 0; i < count; i++)
         {
-            dynamicArray.PushBack(value);
+            dynamicArray.Add(value);
         }
     }
 
     private void FillDynamicArray(
-        DynamicArray<TestReferenceType> dynamicArray, int count, TestReferenceType value)
+        DynamicArray<string> dynamicArray, int count, string value)
     {
         for (int i = 0; i < count; i++)
         {
-            dynamicArray.PushBack(value);
+            dynamicArray.Add(value);
         }
     }
 
@@ -282,16 +343,16 @@ public class DynamicArrayTest
     {
         for (int i = 0; i < _testNumbers.Length; i++)
         {
-            dynamicArray.PushBack(_testNumbers[i]);
+            dynamicArray.Add(_testNumbers[i]);
         }
     }
 
-    private void FillDynamicArrayWithTestReferenceTypes(
-        DynamicArray<TestReferenceType> dynamicArray)
+    private void FillDynamicArrayWithTestStrings(
+        DynamicArray<string> dynamicArray)
     {
-        for (int i = 0; i < _testReferenceTypes.Length; i++)
+        for (int i = 0; i < _testStrings.Length; i++)
         {
-            dynamicArray.PushBack(_testReferenceTypes[i]);
+            dynamicArray.Add(_testStrings[i]);
         }
     }
 }

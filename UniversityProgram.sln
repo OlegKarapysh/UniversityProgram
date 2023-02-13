@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityProgram", "UniversityProgram\UniversityProgram.csproj", "{DAB637FD-AB6C-4279-9B5A-26FEDFFC2B44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityProgram", "UniversityProgram\UniversityProgram.csproj", "{DAB637FD-AB6C-4279-9B5A-26FEDFFC2B44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityClassLibrary", "UniversityClassLibrary\UniversityClassLibrary.csproj", "{BCB77264-1AA1-420D-8D92-C1FFB805A5EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityClassLibrary", "UniversityClassLibrary\UniversityClassLibrary.csproj", "{BCB77264-1AA1-420D-8D92-C1FFB805A5EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityUnitTests", "UniversityUnitTests\UniversityUnitTests.csproj", "{D526D3EB-7E24-470A-B4E1-F0B516EC6BB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "University.Tests", "UniversityUnitTests\University.Tests.csproj", "{D526D3EB-7E24-470A-B4E1-F0B516EC6BB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
