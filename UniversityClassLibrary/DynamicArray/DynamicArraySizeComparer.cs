@@ -1,7 +1,7 @@
 ﻿namespace UniversityClassLibrary.DynamicArray;
 
-public class DynamicArraySizeComparer<T> : IComparer<IDynamicArray<T>>
-    where T : IComparable<T>
+public class DynamicArraySizeComparer<T> : IComparer<IDynamicArray<T>>, ICloneable
+    where T : IComparable<T>, new()
 {
     public int Compare(IDynamicArray<T>? left, IDynamicArray<T>? right)
     {
@@ -12,14 +12,20 @@ public class DynamicArraySizeComparer<T> : IComparer<IDynamicArray<T>>
 
         if (left is null)
         {
-            return 1;
+            return -1;
         }
 
         if (right is null)
         {
-            return -1;
+            return 1;
         }
 
         return left.Count.CompareTo(right.Count);
     }
+
+    public object Clone()
+    {
+        return new DynamicArraySizeComparer<T>();
+    }
+
 }

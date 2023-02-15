@@ -7,18 +7,14 @@ using System.Threading.Tasks;
 namespace UniversityClassLibrary.DynamicArray;
 
 public interface IDynamicArray<T> : IList<T>, IComparable<IDynamicArray<T>>, ICloneable
-    where T : IComparable<T>
+    where T : IComparable<T>, new()
 {
-    //int Capacity { get; }
-    //int ReserveStep { get; set; }
-    //int DefaultReserveStep { get; }
-    //IComparer<IDynamicArray<T>> Comparer { get; set; }
+    int ReserveStep { get; set; }
+    int DefaultReserveStep { get; }
+    IComparer<IDynamicArray<T>> Comparer { get; set; }
 
-    //void Resize(int newSize);
-    //void PushBack(T item);
-    //void PushFront(T item);
-    //void RemoveAll();
-    //void Sort();
+    void Resize(int newSize);
+    void Sort();
     //void PushSorted(T item);
     //void PushSortedForward(T item);
     //void PushSortedBackward(T item);

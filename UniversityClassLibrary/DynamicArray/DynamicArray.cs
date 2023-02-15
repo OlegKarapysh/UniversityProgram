@@ -4,14 +4,14 @@ using System.Runtime.CompilerServices;
 namespace UniversityClassLibrary.DynamicArray;
 
 public class DynamicArray<T> : IDynamicArray<T>
-    where T : IComparable<T>
+    where T : IComparable<T>, new ()
 {
     public const int ItemNotFound = -1;
 
     #region PropsAndIndexers
     public int Count { get; private set; }
     public int Capacity { get; private set; }
-    public bool IsReadOnly => throw new NotImplementedException();
+    public bool IsReadOnly => false;
     public int ReserveStep
     {
         get => _reserveStep;
@@ -83,22 +83,13 @@ public class DynamicArray<T> : IDynamicArray<T>
             return;
         }
 
-        _array = other._array
-            .Select(item =>
-            {
-                try
-                {
-                    return CopyItem(item);
-                }
-                catch (InvalidCastException)
-                {
-                    throw new InvalidOperationException("Cannot make a deep copy!");
-                }
-            })
-            .ToArray();
+        _array = CopyArray(other._array);
+        //Reserve(other.Capacity);
+        //other.CopyTo(_array, 0);
         Count = other.Count;
         Capacity = other.Capacity;
         ReserveStep = other.ReserveStep;
+        Comparer = (IComparer<IDynamicArray<T>>)((ICloneable)other.Comparer).Clone();
     }
     #endregion
 
@@ -116,8 +107,7 @@ public class DynamicArray<T> : IDynamicArray<T>
     public void Add(T item)
     {
         Resize(Count + 1);
-        _array[Count] = item;
-        Count++;
+        _array[Count - 1] = item;
     }
 
     public bool Contains(T item) => IndexOf(item) != ItemNotFound;
@@ -271,11 +261,18 @@ public class DynamicArray<T> : IDynamicArray<T>
         }
 
         Reserve(newSize);
+
+        for (int i = Count; i < newSize; i++)
+        {
+            _array[i] = new T();
+        }
+
+        Count = newSize;
     }
 
     public void Sort()
     {
-        throw new NotImplementedException();
+        QuickSort(_array, 0, Count - 1);
     }
     #endregion
 
@@ -304,7 +301,40 @@ public class DynamicArray<T> : IDynamicArray<T>
         }
     }
 
-    private void SortHoare(DynamicArray<T> array, int size) { }
+    private void QuickSort(T[] array, int left, int right) 
+    {
+        var l = left;
+        var r = right;
+        var pivot = array[(left + right) / 2];
+
+        while (l <= r)
+        {
+            while (array[l].CompareTo(pivot) == -1)
+            {
+                l++;
+            }
+
+            while (array[r].CompareTo(pivot) == 1)
+            {
+                r--;
+            }
+            if (l <= r)
+            {
+                (array[l], array[r]) = (array[r], array[l]);
+                l++;
+                r--;
+            }
+        }
+
+        if (left < r)
+        {
+            QuickSort(array, left, r);
+        }
+        if (l < right)
+        {
+            QuickSort(array, l, right);
+        }
+    }
 
     private int FindIndexToInsertSorted(T item, int left = 0, int right = -1) => default;
 
@@ -313,6 +343,24 @@ public class DynamicArray<T> : IDynamicArray<T>
     private T CopyItem(T item)
     {
         return item is ValueType ? item : (T)((ICloneable)item).Clone();
+    }
+
+    private T[] CopyArray(T[] array)
+    {
+        return array
+            .Select((item) =>
+            {
+                try
+                {
+                    return CopyItem(item);
+                }
+                catch (InvalidCastException)
+                {
+                    throw new InvalidOperationException(
+                        "Cannot make a deep copy: items do not implement ICloneable!");
+                }
+            })
+            .ToArray();
     }
 
     private void ThrowIfIndexOutOfRange(int index)
