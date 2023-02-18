@@ -1,4 +1,6 @@
-﻿namespace UniversityClassLibrary.DynamicArray;
+﻿using UniversityClassLibrary.DynamicArray;
+
+namespace UniversityClassLibrary.NamedArray;
 
 public class NamedArrayComparer<T> : IComparer<IDynamicArray<T>>, ICloneable
     where T : IComparable<T>, new()
@@ -20,7 +22,7 @@ public class NamedArrayComparer<T> : IComparer<IDynamicArray<T>>, ICloneable
             return 1;
         }
 
-        if (!(left.Comparer.Equals(right.Comparer)))
+        if (!left.Comparer.Equals(right.Comparer))
         {
             throw new Exception("Using different comparers!");
         }

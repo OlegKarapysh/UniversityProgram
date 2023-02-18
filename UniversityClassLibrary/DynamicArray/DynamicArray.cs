@@ -8,7 +8,7 @@ public class DynamicArray<T> : IDynamicArray<T>
 {
     public const int ItemNotFound = -1;
 
-    #region PropsAndIndexers
+    #region PropertiesAndIndexers
     public int Count { get; private set; }
     public int Capacity { get; private set; }
     public bool IsReadOnly => false;
@@ -51,7 +51,7 @@ public class DynamicArray<T> : IDynamicArray<T>
     }
     #endregion
 
-    #region PrivateFields
+    #region Fields
     private T[] _array;
     private int _reserveStep;
     private IComparer<IDynamicArray<T>> _comparer;

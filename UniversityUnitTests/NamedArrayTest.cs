@@ -1,4 +1,5 @@
 ﻿using UniversityClassLibrary.DynamicArray;
+using UniversityClassLibrary.NamedArray;
 
 namespace University.Tests;
 

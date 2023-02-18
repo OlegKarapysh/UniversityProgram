@@ -1,9 +1,11 @@
-﻿namespace UniversityClassLibrary.DynamicArray;
+﻿using UniversityClassLibrary.DynamicArray;
+
+namespace UniversityClassLibrary.NamedArray;
 
 public class NamedArray<T> : DynamicArray<T>
     where T : IComparable<T>, new()
 {
-    public string Name 
+    public string Name
     {
         get => _name;
         set => _name = value ?? string.Empty;
@@ -54,5 +56,5 @@ public class NamedArray<T> : DynamicArray<T>
 
     public static bool operator >=(NamedArray<T> left, NamedArray<T> right)
         => left.CompareTo(right) >= 0;
-#endregion
+    #endregion
 }
