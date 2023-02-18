@@ -130,7 +130,7 @@ public class DynamicArrayTest
         var notEqualArrayInts = new DynamicArray<int>();
         FillDynamicArrayWithTestNumbers(_dynamicArrayOfInts);
         FillDynamicArrayWithTestNumbers(equalArrayInts);
-        FillDynamicArray(notEqualArrayInts, _testNumbers.Length, default);
+        FillDynamicArray(notEqualArrayInts, _testNumbers.Length + 1, default);
 
         // Act.
         var resultForEqual = _dynamicArrayOfInts.Equals(equalArrayInts);
@@ -328,16 +328,34 @@ public class DynamicArrayTest
     [Theory]
     [InlineData(-2)]
     [InlineData(int.MaxValue)]
-    public void SearchingIndexOfMissingItem_ReturnsMinusOne(int item)
+    public void SearchingIndexOfMissingItem_ReturnsItemNotFound(int item)
     {
         // Arrange.
         FillDynamicArrayWithTestNumbers(_dynamicArrayOfInts);
 
         // Act.
         var result = _dynamicArrayOfInts.IndexOf(item);
+        var resultBinary = _dynamicArrayOfInts.IndexOfBinary(item);
 
         // Assert.
-        result.Should().Be(-1);
+        result.Should().Be(DynamicArray<int>.ItemNotFound);
+        resultBinary.Should().Be(DynamicArray<int>.ItemNotFound);
+    }
+
+    [Theory]
+    [InlineData(-1, 0)]
+    [InlineData(0, 1)]
+    [InlineData(1, 2)]
+    public void SearchingIndexOfItemBinary_ReturnsIndexOfThatItem(int item, int expectedIndex)
+    {
+        // Arrange.
+        FillDynamicArrayWithTestNumbers(_dynamicArrayOfInts);
+
+        // Act.
+        var result = _dynamicArrayOfInts.IndexOfBinary(item);
+
+        // Assert.
+        result.Should().Be(expectedIndex);
     }
 
     [Theory]
@@ -391,6 +409,27 @@ public class DynamicArrayTest
         result.Should().Equal(sortedArray);
     }
 
+    [Theory]
+    [InlineData(new int[] { -2, -1, 0, 1, 2 }, new int[] { -2, -1, 0, 1, 2 })]
+    [InlineData(new int[] { 2, 1, 0, -1, -2 }, new int[] { -2, -1, 0, 1, 2 })]
+    [InlineData(new int[] { -2, 0, -1, 2, 1 }, new int[] { -2, -1, 0, 1, 2 })]
+    [InlineData(new int[] { -1, -1, 1, 1, 0 }, new int[] { -1, -1, 0, 1, 1 })]
+    [InlineData(new int[] { 1, -1, 1, -1, 0 }, new int[] { -1, -1, 0, 1, 1 })]
+    [InlineData(new int[] { 1, 1, 1 }, new int[] { 1, 1, 1 })]
+    public void OrderingWholeDynamicArray_SortsItCorrectly(int[] values, int[] sortedArray)
+    {
+        // Arrange, Act.
+        for (int i = 0; i < values.Length; i++)
+        {
+            _dynamicArrayOfInts.Add(values[i]);
+            _dynamicArrayOfInts.Ordering(i);
+        }
+        var result = _dynamicArrayOfInts.ToArray();
+
+        // Assert.
+        result.Should().Equal(sortedArray);
+    }
+
     [Fact]
     public void SortingStressTest_CanSortLargeArrays()
     {
@@ -413,6 +452,8 @@ public class DynamicArrayTest
         // Assert.
         result.Should().Equal(sorted);
     }
+
+
 
     private void FillDynamicArray(DynamicArray<int> dynamicArray, int count, int value = default)
     {

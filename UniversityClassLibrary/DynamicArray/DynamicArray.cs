@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace UniversityClassLibrary.DynamicArray;
 
 public class DynamicArray<T> : IDynamicArray<T>
-    where T : IComparable<T>, new ()
+    where T : IComparable<T>, new()
 {
     public const int ItemNotFound = -1;
 
@@ -30,7 +30,7 @@ public class DynamicArray<T> : IDynamicArray<T>
         int n when n <= 64 => 64,
         _ => 4
     };
-    public IComparer<IDynamicArray<T>> Comparer
+    public virtual IComparer<IDynamicArray<T>> Comparer
     {
         get => _comparer;
         set => _comparer = value ?? new DynamicArraySizeComparer<T>();
@@ -83,12 +83,16 @@ public class DynamicArray<T> : IDynamicArray<T>
             return;
         }
 
-        _array = CopyArray(other._array);
-        //Reserve(other.Capacity);
-        //other.CopyTo(_array, 0);
-        Count = other.Count;
-        Capacity = other.Capacity;
         ReserveStep = other.ReserveStep;
+        if (other.Capacity != 0)
+        {
+            Reserve(other.Capacity);
+            if (other.Count != 0)
+            {
+                other.CopyTo(_array, 0);
+                Count = other.Count;
+            }
+        }
         Comparer = (IComparer<IDynamicArray<T>>)((ICloneable)other.Comparer).Clone();
     }
     #endregion
@@ -97,10 +101,22 @@ public class DynamicArray<T> : IDynamicArray<T>
     public static bool operator !(DynamicArray<T> array) => array.Count == 0;
 
     public static bool operator ==(DynamicArray<T> left, DynamicArray<T> right)
-        => left.Equals(right);
+        => left.CompareTo(right) == 0;
 
     public static bool operator !=(DynamicArray<T> left, DynamicArray<T> right)
-        => !left.Equals(right);
+        => !(left == right);
+
+    public static bool operator <(DynamicArray<T> left, DynamicArray<T> right)
+        => left.CompareTo(right) < 0;
+
+    public static bool operator >(DynamicArray<T> left, DynamicArray<T> right)
+        => left.CompareTo(right) > 0;
+
+    public static bool operator <=(DynamicArray<T> left, DynamicArray<T> right)
+        => left.CompareTo(right) <= 0;
+
+    public static bool operator >=(DynamicArray<T> left, DynamicArray<T> right)
+        => left.CompareTo(right) >= 0;
     #endregion
 
     #region InterfacesImplementation
@@ -126,7 +142,15 @@ public class DynamicArray<T> : IDynamicArray<T>
 
     public void Insert(int index, T item)
     {
-        throw new NotImplementedException();
+        Resize(Count + 1);
+
+        ThrowIfIndexOutOfRange(index);
+
+        for (int i = Count - 1; i > index; i--)
+        {
+            _array[i] = _array[i - 1];
+        }
+        _array[index] = item;
     }
 
     public bool Remove(T item)
@@ -189,42 +213,14 @@ public class DynamicArray<T> : IDynamicArray<T>
             yield return _array[i];
         }
     }
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     #endregion
 
     #region OverriddenMethods
-    public override bool Equals(object? obj)
-    {
-        if (!(obj is DynamicArray<T>))
-        {
-            return false;
-        }
+    public override bool Equals(object? obj) =>
+        obj is DynamicArray<T> other && other.CompareTo(this) == 0;
 
-        var other = (DynamicArray<T>)obj;
-        if (other.Count != Count || other.Capacity != Capacity
-                || other.ReserveStep != ReserveStep)
-        {
-            return false;
-        }
-
-        if (!other && !this)
-        {
-            return true;
-        }
-
-        for (int i = 0; i < Count; i++)
-        {
-            if (other[i].CompareTo(this[i]) != 0)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    public bool Equals(DynamicArray<T> other) => other.CompareTo(this) == 0;
 
     public override int GetHashCode()
     {
@@ -253,37 +249,78 @@ public class DynamicArray<T> : IDynamicArray<T>
 
         if (newSize < Count)
         {
-            for (int i = newSize; i < Count; i++)
-            {
-                _array[i] = default;
-            }
-            Count = newSize;
+            DecreaseSize(newSize);
         }
-
-        Reserve(newSize);
-
-        for (int i = Count; i < newSize; i++)
+        else
         {
-            _array[i] = new T();
+            IncreaseSize(newSize);
         }
-
-        Count = newSize;
     }
+
+    public void AddToBegin(T item)
+    {
+        Resize(Count + 1);
+        for (int i = Count - 1; i > 0; i--)
+        {
+            _array[i] = _array[i - 1];
+        }
+        _array[0] = item;
+    }
+
+    public void AddSorted(T item) => Insert(FindIndexToInsertSorted(item), item);
 
     public void Sort()
     {
         QuickSort(_array, 0, Count - 1);
     }
+
+    public int IndexOfBinary(T item)
+    {
+        if (Count == 0)
+        {
+            return ItemNotFound;
+        }
+
+        var left = 0;
+        var right = Count - 1;
+
+        while (left <= right)
+        {
+            var mid = (left + right) / 2;
+
+            if (item.CompareTo(_array[mid]) < 0)
+            {
+                right = mid - 1;
+            }
+            else if (item.CompareTo(_array[mid]) > 0)
+            {
+                left = mid + 1;
+            }
+            else
+            {
+                return mid;
+            }
+        }
+
+        return ItemNotFound;
+    }
+
+    public void Ordering(int index)
+    {
+        var item = _array[index];
+        RemoveAt(index);
+        AddSorted(item);
+    }
     #endregion
 
     #region PrivateMethods
-    private void Reserve(int newSize)
+    private ReserveResult Reserve(int newSize)
     {
         if (newSize == 0)
         {
             _array = Array.Empty<T>();
             Capacity = 0;
-            return;
+            return ReserveResult.ArrayReallocated;
         }
 
         int newCapacity = (newSize / ReserveStep + (newSize % ReserveStep == 0 ? 0 : 1)) * ReserveStep;
@@ -298,10 +335,12 @@ public class DynamicArray<T> : IDynamicArray<T>
 
             _array = newArray;
             Capacity = newCapacity;
+            return ReserveResult.ArrayReallocated;
         }
+        return ReserveResult.ArrayNotReallocated;
     }
 
-    private void QuickSort(T[] array, int left, int right) 
+    private void QuickSort(T[] array, int left, int right)
     {
         var l = left;
         var r = right;
@@ -309,12 +348,12 @@ public class DynamicArray<T> : IDynamicArray<T>
 
         while (l <= r)
         {
-            while (array[l].CompareTo(pivot) == -1)
+            while (array[l].CompareTo(pivot) < 0)
             {
                 l++;
             }
 
-            while (array[r].CompareTo(pivot) == 1)
+            while (array[r].CompareTo(pivot) > 0)
             {
                 r--;
             }
@@ -336,31 +375,62 @@ public class DynamicArray<T> : IDynamicArray<T>
         }
     }
 
-    private int FindIndexToInsertSorted(T item, int left = 0, int right = -1) => default;
+    private int FindIndexToInsertSorted(T item)
+    {
+        if (Count == 0)
+        {
+            return 0;
+        }
+
+        var left = 0;
+        var right = Count - 1;
+
+        while (left <= right)
+        {
+            var mid = (left + right) / 2;
+
+            if (item.CompareTo(_array[mid]) < 0)
+            {
+                right = mid - 1;
+            }
+            else if (item.CompareTo(_array[mid]) > 0)
+            {
+                left = mid + 1;
+            }
+            else
+            {
+                return mid;
+            }
+        }
+
+        return left;
+    }
 
     private bool IsIndexValid(int index) => index >= 0 && index < Count;
 
-    private T CopyItem(T item)
+    private T CopyItem(T item) => item is ValueType ? item : (T)((ICloneable)item).Clone();
+
+    private void DecreaseSize(int newSize)
     {
-        return item is ValueType ? item : (T)((ICloneable)item).Clone();
+        var oldSize = Count;
+        Count = newSize;
+        if ((Reserve(newSize) == ReserveResult.ArrayNotReallocated) && newSize < oldSize)
+        {
+            for (int i = newSize; i < oldSize; i++)
+            {
+                _array[i] = default;
+            }
+        }
     }
 
-    private T[] CopyArray(T[] array)
+    private void IncreaseSize(int newSize)
     {
-        return array
-            .Select((item) =>
-            {
-                try
-                {
-                    return CopyItem(item);
-                }
-                catch (InvalidCastException)
-                {
-                    throw new InvalidOperationException(
-                        "Cannot make a deep copy: items do not implement ICloneable!");
-                }
-            })
-            .ToArray();
+        Reserve(newSize);
+        for (int i = Count; i < newSize; i++)
+        {
+            _array[i] = new T();
+        }
+        Count = newSize;
     }
 
     private void ThrowIfIndexOutOfRange(int index)

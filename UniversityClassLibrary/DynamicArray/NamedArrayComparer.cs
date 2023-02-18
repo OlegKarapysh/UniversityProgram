@@ -1,6 +1,6 @@
 ﻿namespace UniversityClassLibrary.DynamicArray;
 
-public class DynamicArraySizeComparer<T> : IComparer<IDynamicArray<T>>, ICloneable
+public class NamedArrayComparer<T> : IComparer<IDynamicArray<T>>, ICloneable
     where T : IComparable<T>, new()
 {
     public int Compare(IDynamicArray<T>? left, IDynamicArray<T>? right)
@@ -25,16 +25,24 @@ public class DynamicArraySizeComparer<T> : IComparer<IDynamicArray<T>>, ICloneab
             throw new Exception("Using different comparers!");
         }
 
-        return left.Count.CompareTo(right.Count);
+        var l = left as NamedArray<T>;
+        var r = right as NamedArray<T>;
+
+        if (l is null || r is null)
+        {
+            throw new InvalidOperationException("Comparing unappropriate types!");
+        }
+
+        return l.Name.CompareTo(r.Name);
     }
 
     public object Clone()
     {
-        return new DynamicArraySizeComparer<T>();
+        return new NamedArrayComparer<T>();
     }
 
     public override bool Equals(object? obj)
     {
-        return obj is DynamicArraySizeComparer<T>;
+        return obj is NamedArrayComparer<T>;
     }
 }

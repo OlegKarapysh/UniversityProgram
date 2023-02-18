@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace UniversityClassLibrary.DynamicArray;
+﻿namespace UniversityClassLibrary.DynamicArray;
 
 public interface IDynamicArray<T> : IList<T>, IComparable<IDynamicArray<T>>, ICloneable
     where T : IComparable<T>, new()
@@ -15,10 +9,8 @@ public interface IDynamicArray<T> : IList<T>, IComparable<IDynamicArray<T>>, ICl
 
     void Resize(int newSize);
     void Sort();
-    //void PushSorted(T item);
-    //void PushSortedForward(T item);
-    //void PushSortedBackward(T item);
-    //void Placing(int itemIndex);
-    //int Search(T item);
-    //int SearchBinary(T item, int start, int end);
+    void AddToBegin(T item);
+    void AddSorted(T item);
+    void Ordering(int index);
+    int IndexOfBinary(T item);
 }
