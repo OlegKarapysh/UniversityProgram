@@ -91,6 +91,7 @@ public class StudentTest
 	[InlineData("", "b", "c")]
     [InlineData("a", "b", "b")]
     [InlineData("a", "b", null)]
+	[InlineData(null, null, null)]
     public void ComparingDifferentStudents_ReturnsCorrectComparisonResult(
 		string name, string surname, string? patronymic)
 	{

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
+#pragma warning disable CS8601
 
 namespace UniversityClassLibrary.DynamicArray;
 
@@ -26,8 +27,8 @@ public class DynamicArray<T> : IDynamicArray<T>
     }
     public int DefaultReserveStep => Unsafe.SizeOf<T>() switch
     {
-        int n when n <= 8 => 256,
-        int n when n <= 64 => 64,
+        <= 8 => 256,
+        <= 64 => 64,
         _ => 4
     };
     public virtual IComparer<IDynamicArray<T>> Comparer
@@ -76,7 +77,7 @@ public class DynamicArray<T> : IDynamicArray<T>
         Reserve(capacity);
     }
 
-    public DynamicArray(DynamicArray<T> other) : this()
+    public DynamicArray(DynamicArray<T>? other) : this()
     {
         if (other is null)
         {

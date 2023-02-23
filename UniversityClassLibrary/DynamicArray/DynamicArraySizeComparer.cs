@@ -9,12 +9,10 @@ public class DynamicArraySizeComparer<T> : IComparer<IDynamicArray<T>>, ICloneab
         {
             return 0;
         }
-
         if (left is null)
         {
             return -1;
         }
-
         if (right is null)
         {
             return 1;
@@ -28,13 +26,10 @@ public class DynamicArraySizeComparer<T> : IComparer<IDynamicArray<T>>, ICloneab
         return left.Count.CompareTo(right.Count);
     }
 
-    public object Clone()
-    {
-        return new DynamicArraySizeComparer<T>();
-    }
+    public object Clone() => new DynamicArraySizeComparer<T>();
 
     public override bool Equals(object? obj)
-    {
-        return obj is DynamicArraySizeComparer<T>;
-    }
+        => obj is DynamicArraySizeComparer<T>;
+
+    public override int GetHashCode() => HashCode.Combine(this);
 }

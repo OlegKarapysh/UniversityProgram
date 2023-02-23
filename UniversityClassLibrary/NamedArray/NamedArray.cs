@@ -21,7 +21,7 @@ public class NamedArray<T> : DynamicArray<T>
     private IComparer<IDynamicArray<T>> _comparer = new NamedArrayComparer<T>();
 
     #region Constructors
-    public NamedArray() : base() { }
+    public NamedArray() { }
     public NamedArray(string name, int capacity = 0) : base(capacity)
     {
         Name = name;
@@ -34,7 +34,6 @@ public class NamedArray<T> : DynamicArray<T>
             _comparer = (IComparer<IDynamicArray<T>>)((ICloneable)
                 namedArray.Comparer).Clone();
         }
-
     }
     #endregion
 
@@ -57,4 +56,11 @@ public class NamedArray<T> : DynamicArray<T>
     public static bool operator >=(NamedArray<T> left, NamedArray<T> right)
         => left.CompareTo(right) >= 0;
     #endregion
+
+    public override bool Equals(object? obj) 
+        => obj is NamedArray<T> other && other.CompareTo(this) == 0;
+
+    public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Name);
+
+    public object Clone() => new NamedArray<T>(this);
 }

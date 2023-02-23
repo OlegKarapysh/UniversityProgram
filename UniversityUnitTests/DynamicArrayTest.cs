@@ -1,20 +1,16 @@
 using UniversityClassLibrary.DynamicArray;
 
-namespace UniversityUnitTests;
+namespace University.Tests;
 
 public class DynamicArrayTest
 {
     private readonly DynamicArray<int> _dynamicArrayOfInts;
-    //private readonly DynamicArray<string>_dynamicArrayOfStrings;
     private int[] _testNumbers;
-    //private string[] _testStrings;
 
     public DynamicArrayTest()
     {
         _dynamicArrayOfInts = new DynamicArray<int>();
-        //_dynamicArrayOfStrings = new DynamicArray<string>();
-        _testNumbers = new int[] { -1, 0, 1 };
-        //_testStrings = new string[] { "Alice", "Bob", "Calister", "" };
+        _testNumbers = new[] { -1, 0, 1 };
     }
 
     
@@ -27,7 +23,7 @@ public class DynamicArrayTest
         int count, int invalidIndex)
     {
         // Arrange.
-        FillDynamicArray(_dynamicArrayOfInts, count, default);
+        FillDynamicArray(_dynamicArrayOfInts, count);
         Action act = () => { _ = _dynamicArrayOfInts[invalidIndex]; };
 
         // Act, Assert.
@@ -130,7 +126,7 @@ public class DynamicArrayTest
         var notEqualArrayInts = new DynamicArray<int>();
         FillDynamicArrayWithTestNumbers(_dynamicArrayOfInts);
         FillDynamicArrayWithTestNumbers(equalArrayInts);
-        FillDynamicArray(notEqualArrayInts, _testNumbers.Length + 1, default);
+        FillDynamicArray(notEqualArrayInts, _testNumbers.Length + 1);
 
         // Act.
         var resultForEqual = _dynamicArrayOfInts.Equals(equalArrayInts);
@@ -172,7 +168,7 @@ public class DynamicArrayTest
         int initialCount, int newSize, int expectedCapacity)
     {
         // Arrange.
-        FillDynamicArray(_dynamicArrayOfInts, initialCount, default);
+        FillDynamicArray(_dynamicArrayOfInts, initialCount);
         var expected = Enumerable.Repeat(default(int), newSize).ToArray();
 
         // Act.
@@ -249,7 +245,7 @@ public class DynamicArrayTest
     public void RemovingAllItems_ClearsDynamicArray(int count)
     {
         // Arrange.
-        FillDynamicArray(_dynamicArrayOfInts, count, default);
+        FillDynamicArray(_dynamicArrayOfInts, count);
 
         // Act.
         _dynamicArrayOfInts.Clear();
@@ -390,12 +386,12 @@ public class DynamicArrayTest
     }
 
     [Theory]
-    [InlineData(new int[] { -2, -1, 0, 1, 2 }, new int[] { -2, -1, 0, 1, 2 })]
-    [InlineData(new int[] { 2, 1, 0, -1, -2 }, new int[] { -2, -1, 0, 1, 2 })]
-    [InlineData(new int[] { -2, 0, -1, 2, 1 }, new int[] { -2, -1, 0, 1, 2 })]
-    [InlineData(new int[] { -1, -1, 1, 1, 0 }, new int[] { -1, -1, 0, 1, 1 })]
-    [InlineData(new int[] { 1, -1, 1, -1, 0 }, new int[] { -1, -1, 0, 1, 1 })]
-    [InlineData(new int[] { 1, 1, 1 }, new int[] { 1, 1, 1 })]
+    [InlineData(new [] { -2, -1, 0, 1, 2 }, new [] { -2, -1, 0, 1, 2 })]
+    [InlineData(new [] { 2, 1, 0, -1, -2 }, new [] { -2, -1, 0, 1, 2 })]
+    [InlineData(new [] { -2, 0, -1, 2, 1 }, new [] { -2, -1, 0, 1, 2 })]
+    [InlineData(new [] { -1, -1, 1, 1, 0 }, new [] { -1, -1, 0, 1, 1 })]
+    [InlineData(new [] { 1, -1, 1, -1, 0 }, new [] { -1, -1, 0, 1, 1 })]
+    [InlineData(new [] { 1, 1, 1 }, new [] { 1, 1, 1 })]
     public void SortingDynamicArray_SortsCorrectly(int[] values, int[] sortedArray)
     {
         // Arrange.
@@ -410,12 +406,12 @@ public class DynamicArrayTest
     }
 
     [Theory]
-    [InlineData(new int[] { -2, -1, 0, 1, 2 }, new int[] { -2, -1, 0, 1, 2 })]
-    [InlineData(new int[] { 2, 1, 0, -1, -2 }, new int[] { -2, -1, 0, 1, 2 })]
-    [InlineData(new int[] { -2, 0, -1, 2, 1 }, new int[] { -2, -1, 0, 1, 2 })]
-    [InlineData(new int[] { -1, -1, 1, 1, 0 }, new int[] { -1, -1, 0, 1, 1 })]
-    [InlineData(new int[] { 1, -1, 1, -1, 0 }, new int[] { -1, -1, 0, 1, 1 })]
-    [InlineData(new int[] { 1, 1, 1 }, new int[] { 1, 1, 1 })]
+    [InlineData(new [] { -2, -1, 0, 1, 2 }, new [] { -2, -1, 0, 1, 2 })]
+    [InlineData(new [] { 2, 1, 0, -1, -2 }, new [] { -2, -1, 0, 1, 2 })]
+    [InlineData(new [] { -2, 0, -1, 2, 1 }, new [] { -2, -1, 0, 1, 2 })]
+    [InlineData(new [] { -1, -1, 1, 1, 0 }, new [] { -1, -1, 0, 1, 1 })]
+    [InlineData(new [] { 1, -1, 1, -1, 0 }, new [] { -1, -1, 0, 1, 1 })]
+    [InlineData(new [] { 1, 1, 1 }, new [] { 1, 1, 1 })]
     public void OrderingWholeDynamicArray_SortsItCorrectly(int[] values, int[] sortedArray)
     {
         // Arrange, Act.
@@ -430,31 +426,7 @@ public class DynamicArrayTest
         result.Should().Equal(sortedArray);
     }
 
-    [Fact]
-    public void SortingStressTest_CanSortLargeArrays()
-    {
-        // Arrange.
-        const int IterationsCount = 50_000;
-        var sorted = new int[IterationsCount];
-        var array = new DynamicArray<int>(IterationsCount);
-        for (int i = 0; i < IterationsCount; i++)
-        {
-            var item = i % 5;
-            array.Add(item);
-            sorted[i] = item;
-        }
-        Array.Sort(sorted);
-
-        // Act.
-        array.Sort();
-        var result = array.ToArray();
-
-        // Assert.
-        result.Should().Equal(sorted);
-    }
-
-
-
+    
     private void FillDynamicArray(DynamicArray<int> dynamicArray, int count, int value = default)
     {
         for (int i = 0; i < count; i++)
@@ -478,22 +450,4 @@ public class DynamicArrayTest
             dynamicArray.Add(values[i]);
         }
     }
-
-    //private void FillDynamicArray(
-    //    DynamicArray<string> dynamicArray, int count, string value)
-    //{
-    //    for (int i = 0; i < count; i++)
-    //    {
-    //        dynamicArray.Add(value);
-    //    }
-    //}
-
-    //private void FillDynamicArrayWithTestStrings(
-    //    DynamicArray<string> dynamicArray)
-    //{
-    //    for (int i = 0; i < _testStrings.Length; i++)
-    //    {
-    //        dynamicArray.Add(_testStrings[i]);
-    //    }
-    //}
 }

@@ -17,11 +17,13 @@ public class StudentFullNameComparer : IComparer<IStudent>, ICloneable
             return 1;
         }
 
-        return (left.Surname, left.Name, left?.Patronymic).CompareTo(
-            (right.Surname, right.Name, right?.Patronymic));
+        return (left.Surname, left.Name, left.Patronymic).CompareTo(
+            (right.Surname, right.Name, right.Patronymic));
     }
 
     public object Clone() => new StudentFullNameComparer();
 
     public override bool Equals(object? obj) => obj is StudentFullNameComparer;
+
+    public override int GetHashCode() => HashCode.Combine(this);
 }

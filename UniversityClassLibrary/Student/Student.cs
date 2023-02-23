@@ -6,7 +6,7 @@ public class Student : IStudent
     public string Surname { get; set; } = string.Empty;
     public string? Patronymic { get; set; }
     public DateOnly BirthYear { get; set; }
-    public double AverageMark
+    public float AverageMark
     {
         get => _averageMark;
         set => _averageMark = TrimMark(value);
@@ -18,7 +18,7 @@ public class Student : IStudent
     }
 
 
-    private double _averageMark = 0;
+    private float _averageMark = 0;
     private IComparer<IStudent> _comparer = new StudentFullNameComparer();
 
 
@@ -60,5 +60,5 @@ public class Student : IStudent
     public override int GetHashCode() => HashCode.Combine(Name, Surname, Patronymic);
 
 
-    private double TrimMark(double mark) => mark > 100 ? 100 : mark < 0 ? 0 : mark;
+    private float TrimMark(float mark) => mark > 100 ? 100 : mark < 0 ? 0 : mark;
 }

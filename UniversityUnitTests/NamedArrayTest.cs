@@ -69,6 +69,7 @@ public class NamedArrayTest
 
         // Act.
         var result = _namedArray.CompareTo(anotherNamedArray);
+        result = result < 0 ? -1 : result > 0 ? 1 : 0;
         var resultEquals = _namedArray.Equals(anotherNamedArray);
         var resultOperator = _namedArray == anotherNamedArray;
 

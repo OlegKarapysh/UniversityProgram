@@ -11,12 +11,10 @@ public class NamedArrayComparer<T> : IComparer<IDynamicArray<T>>, ICloneable
         {
             return 0;
         }
-
         if (left is null)
         {
             return -1;
         }
-
         if (right is null)
         {
             return 1;
@@ -29,13 +27,12 @@ public class NamedArrayComparer<T> : IComparer<IDynamicArray<T>>, ICloneable
 
         var l = left as NamedArray<T>;
         var r = right as NamedArray<T>;
-
         if (l is null || r is null)
         {
-            throw new InvalidOperationException("Comparing unappropriate types!");
+            throw new InvalidOperationException("Comparing inappropriate types!");
         }
 
-        return l.Name.CompareTo(r.Name);
+        return String.Compare(l.Name, r.Name, StringComparison.Ordinal);
     }
 
     public object Clone()
@@ -43,8 +40,7 @@ public class NamedArrayComparer<T> : IComparer<IDynamicArray<T>>, ICloneable
         return new NamedArrayComparer<T>();
     }
 
-    public override bool Equals(object? obj)
-    {
-        return obj is NamedArrayComparer<T>;
-    }
+    public override bool Equals(object? obj) => obj is NamedArrayComparer<T>;
+
+    public override int GetHashCode() => HashCode.Combine(this);
 }
