@@ -13,5 +13,4 @@ public interface IStudent : IComparable<Student>, ICloneable
     string? Patronymic { get; set; }
     DateOnly BirthYear { get; set; }
     float AverageMark { get; set; }
-    IComparer<IStudent> Comparer { get; set; }
 }

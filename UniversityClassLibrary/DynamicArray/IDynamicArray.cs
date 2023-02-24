@@ -5,7 +5,6 @@ public interface IDynamicArray<T> : IList<T>, IComparable<IDynamicArray<T>>, ICl
 {
     int ReserveStep { get; set; }
     int DefaultReserveStep { get; }
-    IComparer<IDynamicArray<T>> Comparer { get; set; }
 
     void Resize(int newSize);
     void Sort();

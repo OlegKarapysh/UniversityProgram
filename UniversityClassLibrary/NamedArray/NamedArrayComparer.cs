@@ -20,11 +20,6 @@ public class NamedArrayComparer<T> : IComparer<IDynamicArray<T>>, ICloneable
             return 1;
         }
 
-        if (!left.Comparer.Equals(right.Comparer))
-        {
-            throw new Exception("Using different comparers!");
-        }
-
         var l = left as NamedArray<T>;
         var r = right as NamedArray<T>;
         if (l is null || r is null)

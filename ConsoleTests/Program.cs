@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using UniversityClassLibrary.DynamicArray;
+using UniversityClassLibrary.NamedArray;
+using UniversityClassLibrary.Student;
 
 namespace ConsoleTests;
 

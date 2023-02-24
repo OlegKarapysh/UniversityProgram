@@ -26,7 +26,6 @@ public class StudentTest
         _student.Patronymic.Should().BeNull();
 		_student.BirthYear.Should().Be(default);
         _student.AverageMark.Should().Be(default);
-        _student.Comparer.Should().Be(new StudentFullNameComparer());
     }
 
 	[Fact]
@@ -41,7 +40,6 @@ public class StudentTest
 		namedStudent.Patronymic.Should().Be(_patronymic);
 		namedStudent.BirthYear.Should().Be(default);
 		namedStudent.AverageMark.Should().Be(default);
-		namedStudent.Comparer.Should().Be(new StudentFullNameComparer());
 	}
 
 	[Fact]
@@ -65,7 +63,6 @@ public class StudentTest
 		studentCopy.Patronymic.Should().Be(_patronymic);
 		studentCopy.BirthYear.Should().Be(birthYear);
 		studentCopy.AverageMark.Should().Be(averageMark);
-		studentCopy.Comparer.Should().Be(new StudentFullNameComparer());
 	}
 
 	[Fact]

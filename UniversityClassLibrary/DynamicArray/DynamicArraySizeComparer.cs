@@ -18,11 +18,6 @@ public class DynamicArraySizeComparer<T> : IComparer<IDynamicArray<T>>, ICloneab
             return 1;
         }
 
-        if (!(left.Comparer.Equals(right.Comparer)))
-        {
-            throw new Exception("Using different comparers!");
-        }
-
         return left.Count.CompareTo(right.Count);
     }
 

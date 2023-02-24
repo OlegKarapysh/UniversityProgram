@@ -25,17 +25,13 @@ public class DynamicArray<T> : IDynamicArray<T>
             _reserveStep = value;
         }
     }
+
     public int DefaultReserveStep => Unsafe.SizeOf<T>() switch
     {
         <= 8 => 256,
         <= 64 => 64,
         _ => 4
     };
-    public virtual IComparer<IDynamicArray<T>> Comparer
-    {
-        get => _comparer;
-        set => _comparer = value ?? new DynamicArraySizeComparer<T>();
-    }
 
     public T this[int index]
     {
@@ -55,13 +51,11 @@ public class DynamicArray<T> : IDynamicArray<T>
     #region Fields
     private T[] _array;
     private int _reserveStep;
-    private IComparer<IDynamicArray<T>> _comparer;
     #endregion
 
     #region Constructors
     public DynamicArray()
     {
-        _comparer = new DynamicArraySizeComparer<T>();
         _array = Array.Empty<T>();
         ReserveStep = DefaultReserveStep;
         Resize(0);
@@ -94,7 +88,6 @@ public class DynamicArray<T> : IDynamicArray<T>
                 Count = other.Count;
             }
         }
-        Comparer = (IComparer<IDynamicArray<T>>)((ICloneable)other.Comparer).Clone();
     }
     #endregion
 
@@ -193,7 +186,7 @@ public class DynamicArray<T> : IDynamicArray<T>
 
     public void Clear() => Resize(0);
 
-    public object Clone() => new DynamicArray<T>(this);
+    public virtual object Clone() => new DynamicArray<T>(this);
 
     public void CopyTo(T[] array, int arrayIndex)
     {
@@ -205,7 +198,8 @@ public class DynamicArray<T> : IDynamicArray<T>
         }
     }
 
-    public int CompareTo(IDynamicArray<T>? other) => Comparer.Compare(this, other);
+    public int CompareTo(IDynamicArray<T>? other) =>
+        other is null ? 1 : Count.CompareTo(other.Count);
 
     public IEnumerator<T> GetEnumerator()
     {
@@ -219,23 +213,15 @@ public class DynamicArray<T> : IDynamicArray<T>
 
     #region OverriddenMethods
     public override bool Equals(object? obj) =>
-        obj is DynamicArray<T> other && other.CompareTo(this) == 0;
+        obj is DynamicArray<T> other && CompareTo(other) == 0;
 
-    public bool Equals(DynamicArray<T> other) => other.CompareTo(this) == 0;
+    public bool Equals(DynamicArray<T> other) => CompareTo(other) == 0;
 
-    public override int GetHashCode()
-    {
-        int hash = 0;
-        if (_array != null)
-        {
-            for (int i = 0; i < Count; i++)
-            {
-                hash ^= _array[i].GetHashCode();
-            }
-        }
+    public override int GetHashCode() => Count;
 
-        return HashCode.Combine(Count, Capacity, ReserveStep, hash);
-    }
+    public override string ToString() =>
+        $"Dynamic array count: {Count}, capacity: {Capacity}, reserve step: {ReserveStep}";
+
     #endregion
 
     #region PublicMethods

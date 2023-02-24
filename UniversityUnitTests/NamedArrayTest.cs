@@ -24,7 +24,6 @@ public class NamedArrayTest
 		var namedArray = new NamedArray<int>(expectedName);
 		var namedArrayWithCapacity = new NamedArray<int>(expectedName, expectedCapacity);
 		var namedArrayCopy = new NamedArray<int>(namedArrayWithCapacity);
-		var isCorrectComparer = defaultArray.Comparer.Equals(new NamedArrayComparer<int>());
 
 		// Assert.
 		defaultArray.Name.Should().Be(string.Empty);
@@ -33,7 +32,6 @@ public class NamedArrayTest
         namedArrayWithCapacity.Capacity.Should().Be(expectedCapacity);
         namedArrayCopy.Name.Should().Be(expectedName);
         namedArrayCopy.Capacity.Should().Be(expectedCapacity);
-		isCorrectComparer.Should().BeTrue();
     }
 
 	[Theory]
@@ -60,6 +58,7 @@ public class NamedArrayTest
     [InlineData("a", "b", -1)]
     [InlineData("b", "a", 1)]
 	[InlineData(null, "a", -1)]
+    [InlineData("a", null, 1)]
     public void ComparingTwoDifferentNamedArrays_ReturnsCorrectResult(
 		string name1, string name2, int expected)
     {

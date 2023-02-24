@@ -1,4 +1,6 @@
-﻿namespace UniversityClassLibrary.Student;
+﻿using UniversityClassLibrary.HashCodes;
+
+namespace UniversityClassLibrary.Student;
 
 public class Student : IStudent
 {
@@ -11,15 +13,8 @@ public class Student : IStudent
         get => _averageMark;
         set => _averageMark = TrimMark(value);
     }
-    public virtual IComparer<IStudent> Comparer
-    {
-        get => _comparer;
-        set => _comparer = value ?? new StudentFullNameComparer();
-    }
-
-
+    
     private float _averageMark = 0;
-    private IComparer<IStudent> _comparer = new StudentFullNameComparer();
 
 
     public Student() { }
@@ -38,7 +33,6 @@ public class Student : IStudent
         Patronymic = other.Patronymic?.Substring(0);
         BirthYear = other.BirthYear;
         AverageMark = other.AverageMark;
-        Comparer = (IComparer<IStudent>)((ICloneable)other.Comparer).Clone();
     }
 
     public static bool operator ==(Student left, Student right) => left.CompareTo(right) == 0;
@@ -48,17 +42,25 @@ public class Student : IStudent
     public static bool operator <=(Student left, Student right) => left.CompareTo(right) <= 0;
     public static bool operator >=(Student left, Student right) => left.CompareTo(right) >= 0;
 
-    public int CompareTo(Student? other) => _comparer.Compare(this, other);
+    public int CompareTo(Student? other)
+    {
+        return other is null ? 1 : (Surname, Name, Patronymic).CompareTo(
+            (other.Surname, other.Name, other.Patronymic));
+    }
 
-    public object Clone() => new Student(this);
+    public virtual object Clone() => new Student(this);
 
     public override bool Equals(object? obj) => obj is Student other &&
-        _comparer.Compare(this, other) == 0;
+        CompareTo(other) == 0;
 
-    public bool Equals(Student other) => _comparer.Compare(this, other) == 0;
+    public bool Equals(Student other) => CompareTo(other) == 0;
 
-    public override int GetHashCode() => HashCode.Combine(Name, Surname, Patronymic);
+    public override int GetHashCode() => HashFNV.GetHashForStrings(Surname, Name, Patronymic);
 
+    public override string ToString() => 
+        $"Student surname: {Surname}, name: {Name}" + 
+        (Patronymic is null ? "" : $", patronymic: {Patronymic}");
 
+    
     private float TrimMark(float mark) => mark > 100 ? 100 : mark < 0 ? 0 : mark;
 }

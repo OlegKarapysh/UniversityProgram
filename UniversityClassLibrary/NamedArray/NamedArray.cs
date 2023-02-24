@@ -1,4 +1,5 @@
 ﻿using UniversityClassLibrary.DynamicArray;
+using UniversityClassLibrary.HashCodes;
 
 namespace UniversityClassLibrary.NamedArray;
 
@@ -11,15 +12,7 @@ public class NamedArray<T> : DynamicArray<T>
         set => _name = value ?? string.Empty;
     }
 
-    public override IComparer<IDynamicArray<T>> Comparer
-    {
-        get => _comparer;
-        set => _comparer = value ?? new NamedArrayComparer<T>();
-    }
-
     private string _name = string.Empty;
-    private IComparer<IDynamicArray<T>> _comparer = new NamedArrayComparer<T>();
-
     #region Constructors
     public NamedArray() { }
     public NamedArray(string name, int capacity = 0) : base(capacity)
@@ -31,8 +24,6 @@ public class NamedArray<T> : DynamicArray<T>
         if (namedArray is not null)
         {
             _name = namedArray.Name.Substring(0);
-            _comparer = (IComparer<IDynamicArray<T>>)((ICloneable)
-                namedArray.Comparer).Clone();
         }
     }
     #endregion
@@ -57,10 +48,20 @@ public class NamedArray<T> : DynamicArray<T>
         => left.CompareTo(right) >= 0;
     #endregion
 
-    public override bool Equals(object? obj) 
-        => obj is NamedArray<T> other && other.CompareTo(this) == 0;
+    public override bool Equals(object? obj) =>
+        obj is NamedArray<T> other && CompareTo(other) == 0;
+    
+    public bool Equals(NamedArray<T> other) => CompareTo(other) == 0;
 
-    public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), Name);
+    public int CompareTo(NamedArray<T>? other) =>
+        other is null ? 1 : string.Compare(Name, other.Name, StringComparison.Ordinal);
+        
 
-    public object Clone() => new NamedArray<T>(this);
+    public override int GetHashCode() => HashFNV.GetHashForString(Name);
+
+    public override string ToString() =>
+        $"Named array name: {Name}, count: {Count}, " +
+        $"capacity: {Capacity}, reserve step: {ReserveStep}";
+
+    public override object Clone() => new NamedArray<T>(this);
 }
