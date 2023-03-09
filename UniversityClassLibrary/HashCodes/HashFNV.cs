@@ -24,7 +24,7 @@ public class HashFNV
         }
     }
 
-    public static int GetHashForStrings(params string[] strings)
+    public static int GetHashForStrings(params string?[] strings)
     {
         unchecked
         {

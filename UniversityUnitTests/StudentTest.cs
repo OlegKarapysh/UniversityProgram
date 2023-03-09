@@ -46,7 +46,7 @@ public class StudentTest
 	public void CopyingStudent_ReturnsEqualStudent()
 	{
         // Arrange.
-		var birthYear = new DateOnly(2000, 1, 1);
+        ushort birthYear = 2000;
 		var averageMark = 99;
         _student.AverageMark = averageMark;
 		_student.BirthYear = birthYear;

@@ -4,19 +4,42 @@ namespace UniversityClassLibrary.Student;
 
 public class Student : IStudent
 {
-    public string Name { get; set; } = string.Empty;
-    public string Surname { get; set; } = string.Empty;
+    public string Name
+    {
+        get => _name;
+        set => _name = value ?? String.Empty;
+    }
+    public string Surname
+    {
+        get => _surname;
+        set => _surname = value ?? String.Empty;
+    }
     public string? Patronymic { get; set; }
-    public DateOnly BirthYear { get; set; }
+
+    public ushort BirthYear
+    {
+        get => _birthYear;
+        set
+        {
+            if (value > DateTime.Now.Year)
+            {
+                throw new ArgumentOutOfRangeException(
+                    "BirthYear");
+            }
+            _birthYear = value;
+        }
+    }
     public float AverageMark
     {
         get => _averageMark;
         set => _averageMark = TrimMark(value);
     }
     
-    private float _averageMark = 0;
-
-
+    private string _name = string.Empty;
+    private string _surname = string.Empty;
+    private float _averageMark;
+    private ushort _birthYear;
+    
     public Student() { }
 
     public Student(string name, string surname, string patronymic)
