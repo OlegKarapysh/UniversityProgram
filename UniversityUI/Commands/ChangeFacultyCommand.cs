@@ -20,11 +20,11 @@ public class ChangeFacultyCommand : ICommand
 
     public ChangeFacultyCommand(MainWindowViewModel mainWindow) => _mainWindow = mainWindow;
 
-    public bool CanExecute(object? parameter) => _mainWindow.Faculties.Count > 0;
+    public bool CanExecute(object? parameter) => _mainWindow.FacultyNames.Count > 0;
 
     public void Execute(object? parameter)
     {
-        var oldName = _mainWindow.SelectedFaculty.FacultyName;
+        var oldName = _mainWindow.SelectedFaculty;
         var changeFacultyWindow = new AddFacultyGroupWindow(
             "Change faculty", oldName);
         changeFacultyWindow.NewNameSet += (_, newName) =>
@@ -37,11 +37,9 @@ public class ChangeFacultyCommand : ICommand
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var selectedFaculty = _mainWindow.GetFacultyByName(oldName);
-            selectedFaculty.FacultyName = newName;
-            _mainWindow.Faculties[_mainWindow.Faculties.IndexOf(selectedFaculty)].FacultyName = newName;
-            _mainWindow.SelectedFaculty = MainWindowViewModel.DefaultFaculty;
-            _mainWindow.SelectedFaculty = selectedFaculty;
+
+            _mainWindow.ChangeFacultyName(oldName, newName);
+            _mainWindow.SelectedFaculty = newName;
         };
         changeFacultyWindow.ShowDialog();
     }

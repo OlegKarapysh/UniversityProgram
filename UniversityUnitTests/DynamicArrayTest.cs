@@ -1,4 +1,5 @@
 using UniversityClassLibrary.DynamicArray;
+using UniversityClassLibrary.NamedArray;
 
 namespace University.Tests;
 
@@ -13,6 +14,23 @@ public class DynamicArrayTest
         _testNumbers = new[] { -1, 0, 1 };
     }
 
+    [Fact]
+    public void Ordering()
+    {
+        var da = new DynamicArray<NamedArray<int>>();
+        da.Add(new NamedArray<int>("fc"));
+        da.Add(new NamedArray<int>("a"));
+        da.Ordering(da.Count - 1);
+        da.Add(new NamedArray<int>("b"));
+        da.Ordering(da.Count - 1);
+        // da.Add(new NamedArray<int>("b"));
+        // da.Ordering(da.Count - 1);
+        
+        da[0].Name.Should().Be("a");
+        da[1].Name.Should().Be("b");
+        da[2].Name.Should().Be("fc");
+        // da[3].Name.Should().Be("z");
+    }
     
     [Theory]
     [InlineData(0, 0)]

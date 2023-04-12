@@ -3,7 +3,7 @@ using UniversityClassLibrary.HashCodes;
 
 namespace UniversityClassLibrary.NamedArray;
 
-public class NamedArray<T> : DynamicArray<T>
+public class NamedArray<T> : DynamicArray<T>, IComparable<NamedArray<T>>
     where T : IComparable<T>, new()
 {
     public string Name

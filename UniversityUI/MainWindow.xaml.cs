@@ -38,7 +38,7 @@ public partial class MainWindow : Window
         group.Add(st);
         var faculty = new NamedArray<NamedArray<Student>>("FcNam");
         faculty.Add(group);
-        var faculties = new List<NamedArray<NamedArray<Student>>>();
+        var faculties = new DynamicArray<NamedArray<NamedArray<Student>>>();
         faculties.Add(faculty);
         //_mainWindowViewModel = new MainWindowViewModel(new List<NamedArray<NamedArray<Student>>>());
         _mainWindowViewModel = new MainWindowViewModel(faculties);

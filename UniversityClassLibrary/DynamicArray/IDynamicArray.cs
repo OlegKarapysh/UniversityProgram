@@ -1,6 +1,6 @@
 ﻿namespace UniversityClassLibrary.DynamicArray;
 
-public interface IDynamicArray<T> : IList<T>, IComparable<IDynamicArray<T>>, ICloneable
+public interface IDynamicArray<T> : IList<T>,  ICloneable
     where T : IComparable<T>, new()
 {
     int ReserveStep { get; set; }

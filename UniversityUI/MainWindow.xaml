@@ -104,7 +104,7 @@
                        HorizontalAlignment="Center" Margin="0 0 0 5"
                        TextWrapping="Wrap"/>
                 <ComboBox Margin="5"
-                          ItemsSource="{Binding Faculties, UpdateSourceTrigger=PropertyChanged}"
+                          ItemsSource="{Binding FacultyNames, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValue="{Binding SelectedFaculty, Mode=TwoWay}"/>
             </StackPanel>
             

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace UniversityClassLibrary.DynamicArray;
 
-public class DynamicArray<T> : IDynamicArray<T>
+public class DynamicArray<T> : IDynamicArray<T>, IComparable<DynamicArray<T>>
     where T : IComparable<T>, new()
 {
     public const int ItemNotFound = -1;
@@ -198,7 +198,7 @@ public class DynamicArray<T> : IDynamicArray<T>
         }
     }
 
-    public int CompareTo(IDynamicArray<T>? other) =>
+    public int CompareTo(DynamicArray<T>? other) =>
         other is null ? 1 : Count.CompareTo(other.Count);
 
     public IEnumerator<T> GetEnumerator()

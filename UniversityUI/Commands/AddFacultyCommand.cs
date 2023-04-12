@@ -31,9 +31,9 @@ public class AddFacultyCommand : ICommand
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var newFaculty = new FacultyViewModel(new NamedArray<NamedArray<Student>>(newName));
-            _mainWindow.Faculties.Add(newFaculty);
-            _mainWindow.SelectedFaculty = newFaculty;
+            var newFaculty = new NamedArray<NamedArray<Student>>(newName);
+            _mainWindow.AddFaculty(newFaculty);
+            _mainWindow.SelectedFaculty = newFaculty.Name;
         };
         addFacultyWindow.ShowDialog();
     }
