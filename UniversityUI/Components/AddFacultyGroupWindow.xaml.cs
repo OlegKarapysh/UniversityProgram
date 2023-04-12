@@ -35,7 +35,8 @@ public partial class AddFacultyGroupWindow : Window
         if (string.IsNullOrEmpty(NewName))
         {
             MessageBox.Show(
-                "Name cannot be empty!", "caption", MessageBoxButton.OK, MessageBoxImage.Error);
+                "Name cannot be empty!", "Invalid name", 
+                MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
         OnNewNameSet();

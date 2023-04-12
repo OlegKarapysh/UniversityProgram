@@ -40,8 +40,9 @@ public partial class MainWindow : Window
         faculty.Add(group);
         var faculties = new List<NamedArray<NamedArray<Student>>>();
         faculties.Add(faculty);
-        _mainWindowViewModel = new MainWindowViewModel(new List<NamedArray<NamedArray<Student>>>());
-
+        //_mainWindowViewModel = new MainWindowViewModel(new List<NamedArray<NamedArray<Student>>>());
+        _mainWindowViewModel = new MainWindowViewModel(faculties);
+        
         InitializeComponent();
         DataContext = _mainWindowViewModel;
     }

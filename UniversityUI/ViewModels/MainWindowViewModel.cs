@@ -11,7 +11,7 @@ namespace UniversityUI.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     public static FacultyViewModel DefaultFaculty = new FacultyViewModel(new NamedArray<NamedArray<Student>>());
-    
+
     public ICommand AddFacultyCommand { get; }
     public ICommand ChangeFacultyCommand { get; }
     

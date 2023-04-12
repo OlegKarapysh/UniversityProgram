@@ -27,7 +27,7 @@ public class AddFacultyCommand : ICommand
             {
                 MessageBox.Show(
                     "Faculty with such name already exists!",
-                    "Unable to add",
+                    "Invalid name",
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }

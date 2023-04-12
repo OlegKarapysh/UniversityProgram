@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using UniversityClassLibrary.NamedArray;
 using UniversityClassLibrary.Student;
@@ -24,16 +25,25 @@ public class ChangeFacultyCommand : ICommand
     public void Execute(object? parameter)
     {
         var oldName = _mainWindow.SelectedFaculty.FacultyName;
-        var addFacultyWindow = new AddFacultyGroupWindow(
+        var changeFacultyWindow = new AddFacultyGroupWindow(
             "Change faculty", oldName);
-        addFacultyWindow.NewNameSet += (_, newName) =>
+        changeFacultyWindow.NewNameSet += (_, newName) =>
         {
+            if (_mainWindow.FacultyExists(newName))
+            {
+                MessageBox.Show(
+                    "Faculty with such name already exists!",
+                    "Invalid name",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             var selectedFaculty = _mainWindow.GetFacultyByName(oldName);
             selectedFaculty.FacultyName = newName;
+            _mainWindow.Faculties[_mainWindow.Faculties.IndexOf(selectedFaculty)].FacultyName = newName;
             _mainWindow.SelectedFaculty = MainWindowViewModel.DefaultFaculty;
             _mainWindow.SelectedFaculty = selectedFaculty;
         };
-        addFacultyWindow.ShowDialog();
+        changeFacultyWindow.ShowDialog();
     }
     
     //private void OnCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
