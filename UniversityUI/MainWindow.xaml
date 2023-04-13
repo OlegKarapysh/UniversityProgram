@@ -52,9 +52,11 @@
                     </Grid.RowDefinitions>
                     <Button Grid.Row="1" Grid.Column="0" x:Name="AddFacultyButton"
                             Content="Add _faculty..." Margin="5"
+                            IsDefault="True"
                             Command="{Binding Path=AddFacultyCommand}"/>
-                    <Button Grid.Row="2" Grid.Column="0"
-                         Content="Delete _faculty" Margin="5"/>
+                    <Button Grid.Row="2" Grid.Column="0" x:Name="DeleteFacultyButton"
+                         Content="Delete _faculty" Margin="5"
+                         Command="{Binding DeleteFacultyCommand}"/>
                     <Button Grid.Row="3" Grid.Column="0" x:Name="ChangeFacultyButton"
                          Content="Change _faculty..." Margin="5" IsCancel="True"
                          Command="{Binding ChangeFacultyCommand}"/>
@@ -76,13 +78,14 @@
                     <Button Grid.Row="1" Grid.Column="0" x:Name="AddGroupButton"
                             Margin="5"
                             Content="Add _group..."
-                            Click="AddGroupButton_OnClick"/>
-                    <Button Grid.Row="2" Grid.Column="0"
-                        Content="Delete _group" Margin="5"/>
+                            Command="{Binding AddGroupCommand}"/>
+                    <Button Grid.Row="2" Grid.Column="0" x:Name="DeleteGroupButton"
+                            Content="Delete _group" Margin="5"
+                            Command="{Binding DeleteGroupCommand}"/>
                     <Button Grid.Row="3" Grid.Column="0" x:Name="ChangeGroupButton"
                             Margin="5"
                             Content="Change _group..."
-                            Click="ChangeGroupButton_OnClick"/>
+                            Command="{Binding ChangeGroupCommand}"/>
                 </Grid>
             </GroupBox>
         </Grid>
@@ -100,10 +103,12 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
-                <TextBlock Text="Faculty list" 
+                <TextBlock Text="Faculties" 
                        HorizontalAlignment="Center" Margin="0 0 0 5"
                        TextWrapping="Wrap"/>
-                <ComboBox Margin="5"
+                <ComboBox x:Name="FacultiesComboBox"
+                          Margin="5" 
+                          IsEnabled="{Binding IsFacultiesEnabled}"
                           ItemsSource="{Binding FacultyNames, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValue="{Binding SelectedFaculty, Mode=TwoWay}"/>
             </StackPanel>
@@ -118,11 +123,16 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                    Text="Group list" 
+                    Text="Groups" 
                     HorizontalAlignment="Center" Margin="0 15 0 5"
                     TextWrapping="Wrap"/>
-                <TextBox Grid.Row="1" Grid.Column="0" Margin="5"/>
-                <ListBox Grid.Row="2" Grid.Column="0" Margin="5"></ListBox>
+                <TextBox Grid.Row="1" Grid.Column="0" x:Name="FilterGroupTextBox"
+                         Margin="5"
+                         Text="{Binding Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <ListBox Grid.Row="2" Grid.Column="0" x:Name="GroupsListBox"
+                         Margin="5"
+                         ItemsSource="{Binding GroupNames}"
+                         SelectedItem="{Binding SelectedGroup, Mode=TwoWay}"/>
             </Grid>
 
             <Grid Grid.Row="1" Grid.Column="2">
@@ -135,11 +145,15 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="Student list" 
+                           Text="Students" 
                            HorizontalAlignment="Center" Margin="0 15 0 5"
                            TextWrapping="Wrap"/>
-                <TextBox Grid.Row="1" Grid.Column="0" Margin="5"/>
-                <ListBox Grid.Row="2" Grid.Column="0" Margin="5"></ListBox>
+                <TextBox Grid.Row="1" Grid.Column="0" x:Name="StudentsFilterTextBox"
+                         IsEnabled="False"
+                         Margin="5"/>
+                <ListBox Grid.Row="2" Grid.Column="0" 
+                         Margin="5"
+                         IsEnabled="False"/>
             </Grid>
         </Grid>
 
@@ -166,7 +180,8 @@
                            HorizontalAlignment="Center" Margin="0 0 0 5"
                            TextWrapping="Wrap"/>
                 <ListBox Grid.Row="1" Grid.Column="0"
-                         Margin="5" MinHeight="50"></ListBox>
+                         Margin="5" MinHeight="50"
+                         IsEnabled="False"/>
             </Grid>
 
             <GroupBox Grid.Row="1" Grid.Column="0">
@@ -185,11 +200,14 @@
                     <Button Grid.Row="1" Grid.Column="0" x:Name="AddStudentButton"
                             Margin="5"
                             Content="Add _student..." 
+                            IsEnabled="False"
                             Click="AddStudentButton_OnClick"/>
                     <Button Grid.Row="2" Grid.Column="0"
-                        Content="Delete _student" Margin="5"/>
+                            IsEnabled="False"
+                            Content="Delete _student" Margin="5"/>
                     <Button Grid.Row="3" Grid.Column="0" x:Name="ChangeStudentButton"
                             Margin="5"
+                            IsEnabled="False"
                             Content="Change _student..."
                             Click="ChangeStudentButton_OnClick"/>
                 </Grid>

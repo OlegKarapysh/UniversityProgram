@@ -20,7 +20,8 @@ public class ChangeFacultyCommand : ICommand
 
     public ChangeFacultyCommand(MainWindowViewModel mainWindow) => _mainWindow = mainWindow;
 
-    public bool CanExecute(object? parameter) => _mainWindow.FacultyNames.Count > 0;
+    public bool CanExecute(object? parameter) => 
+        _mainWindow.FacultyNames.Count > 0 && _mainWindow.SelectedFaculty is not null;
 
     public void Execute(object? parameter)
     {
@@ -29,7 +30,7 @@ public class ChangeFacultyCommand : ICommand
             "Change faculty", oldName);
         changeFacultyWindow.NewNameSet += (_, newName) =>
         {
-            if (_mainWindow.FacultyExists(newName))
+            if (changeFacultyWindow.IsNameWrong = !_mainWindow.RenameCurrentFaculty(newName))
             {
                 MessageBox.Show(
                     "Faculty with such name already exists!",
@@ -37,8 +38,6 @@ public class ChangeFacultyCommand : ICommand
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
-            _mainWindow.ChangeFacultyName(oldName, newName);
             _mainWindow.SelectedFaculty = newName;
         };
         changeFacultyWindow.ShowDialog();

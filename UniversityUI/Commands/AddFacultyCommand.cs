@@ -23,7 +23,8 @@ public class AddFacultyCommand : ICommand
         var addFacultyWindow = new AddFacultyGroupWindow("Add faculty");
         addFacultyWindow.NewNameSet += (_, newName) =>
         {
-            if (_mainWindow.FacultyExists(newName))
+            var newFaculty = new NamedArray<NamedArray<Student>>(newName);
+            if (addFacultyWindow.IsNameWrong = !_mainWindow.AddFaculty(newFaculty))
             {
                 MessageBox.Show(
                     "Faculty with such name already exists!",
@@ -31,8 +32,6 @@ public class AddFacultyCommand : ICommand
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var newFaculty = new NamedArray<NamedArray<Student>>(newName);
-            _mainWindow.AddFaculty(newFaculty);
             _mainWindow.SelectedFaculty = newFaculty.Name;
         };
         addFacultyWindow.ShowDialog();

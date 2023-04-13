@@ -10,6 +10,7 @@
         MinHeight="250" MinWidth="300"
         WindowStartupLocation="CenterScreen"
         FontSize="20"
+        ResizeMode="CanMinimize"
         Loaded="AddFacultyGroupWindow_OnLoaded">
     <Grid>
         <Grid.RowDefinitions>
@@ -39,11 +40,13 @@
                      VerticalAlignment="Center"
                      TextWrapping="Wrap"
                      Margin="0 0 20 0"
+                     Focusable="True"
                      Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
         </Grid>
         
         <Button Grid.Row="2" Grid.Column="1" x:Name="OkButton"
                 Content="_Ok" Margin="20 20 20 25"
+                IsDefault="True"
                 Click="OkButton_OnClick"/>
         <Button Grid.Row="2" Grid.Column="2" x:Name="CancelButton"
                 Content="_Cancel" Margin="20 20 20 25"

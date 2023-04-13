@@ -40,17 +40,14 @@ public partial class MainWindow : Window
         faculty.Add(group);
         var faculties = new DynamicArray<NamedArray<NamedArray<Student>>>();
         faculties.Add(faculty);
-        //_mainWindowViewModel = new MainWindowViewModel(new List<NamedArray<NamedArray<Student>>>());
-        _mainWindowViewModel = new MainWindowViewModel(faculties);
+        _mainWindowViewModel = new MainWindowViewModel(new DynamicArray<NamedArray<NamedArray<Student>>>());
+        //_mainWindowViewModel = new MainWindowViewModel(faculties);
         
         InitializeComponent();
         DataContext = _mainWindowViewModel;
     }
 
-    private void ExitButton_Click(object sender, RoutedEventArgs e)
-    {
-        Close();
-    }
+    private void ExitButton_Click(object sender, RoutedEventArgs e) => Close();
 
     private void AddStudentButton_OnClick(object sender, RoutedEventArgs e)
     {

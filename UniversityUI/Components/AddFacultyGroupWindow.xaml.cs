@@ -7,6 +7,7 @@ public partial class AddFacultyGroupWindow : Window
 {
     public event EventHandler<string>? NewNameSet;
     public string NewName { get; set; }
+    public bool IsNameWrong { get; set; }
     
     private readonly string _oldName;
 
@@ -23,12 +24,11 @@ public partial class AddFacultyGroupWindow : Window
     private void AddFacultyGroupWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
         InputNameTextBox.Text = _oldName;
+        InputNameTextBox.Focus();
+        InputNameTextBox.SelectAll();
     }
 
-    private void CancelButton_OnClick(object sender, RoutedEventArgs e)
-    {
-        Close();
-    }
+    private void CancelButton_OnClick(object sender, RoutedEventArgs e) => Close();
 
     private void OkButton_OnClick(object sender, RoutedEventArgs e)
     {
@@ -40,6 +40,9 @@ public partial class AddFacultyGroupWindow : Window
             return;
         }
         OnNewNameSet();
-        Close();
+        if (!IsNameWrong)
+        {
+            Close();
+        }
     }
 }
