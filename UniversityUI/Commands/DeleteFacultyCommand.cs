@@ -21,11 +21,10 @@ public class DeleteFacultyCommand : ICommand
 
     public void Execute(object? parameter)
     {
-        var removedIndex = _mainWindow.FacultyNames.IndexOf(_mainWindow.SelectedFaculty);
-        _mainWindow.RemoveCurrentFaculty();
+        var indexOfRemoved = _mainWindow.RemoveCurrentFaculty();
         _mainWindow.SelectedFaculty = 
-            removedIndex > 0 ? _mainWindow.FacultyNames[removedIndex - 1] : 
-            _mainWindow.FacultyNames.Count > 0 ? _mainWindow.FacultyNames[removedIndex] : null;
+            indexOfRemoved > 0 ? _mainWindow.FacultyNames[indexOfRemoved - 1] : 
+            _mainWindow.FacultyNames.Count > 0 ? _mainWindow.FacultyNames[indexOfRemoved] : null;
     }
 
 }

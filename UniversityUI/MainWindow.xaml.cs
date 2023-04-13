@@ -72,5 +72,10 @@ public partial class MainWindow : Window
         var changeGroupWindow = new AddFacultyGroupWindow("Change group", "old group name");
         changeGroupWindow.ShowDialog();
     }
+
+    private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        GroupsListBox.SelectedItem = ((TextBlock)sender).Text;
+    }
 }
 

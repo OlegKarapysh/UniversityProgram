@@ -30,6 +30,8 @@ public class ChangeFacultyCommand : ICommand
             "Change faculty", oldName);
         changeFacultyWindow.NewNameSet += (_, newName) =>
         {
+            var selectedGroup = _mainWindow.SelectedGroup;
+            var filter = _mainWindow.Filter;
             if (changeFacultyWindow.IsNameWrong = !_mainWindow.RenameCurrentFaculty(newName))
             {
                 MessageBox.Show(
@@ -39,6 +41,8 @@ public class ChangeFacultyCommand : ICommand
                 return;
             }
             _mainWindow.SelectedFaculty = newName;
+            _mainWindow.Filter = filter;
+            _mainWindow.SelectedGroup = selectedGroup;
         };
         changeFacultyWindow.ShowDialog();
     }

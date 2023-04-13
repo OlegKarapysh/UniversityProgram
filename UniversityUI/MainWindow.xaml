@@ -128,11 +128,14 @@
                     TextWrapping="Wrap"/>
                 <TextBox Grid.Row="1" Grid.Column="0" x:Name="FilterGroupTextBox"
                          Margin="5"
+                         IsEnabled="{Binding IsFilterEnabled}"
                          Text="{Binding Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <ListBox Grid.Row="2" Grid.Column="0" x:Name="GroupsListBox"
                          Margin="5"
-                         ItemsSource="{Binding GroupNames}"
-                         SelectedItem="{Binding SelectedGroup, Mode=TwoWay}"/>
+                         SelectionMode="Single"
+                         ItemsSource="{Binding GroupNames, UpdateSourceTrigger=PropertyChanged}"
+                         SelectedItem="{Binding SelectedGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                </ListBox>
             </Grid>
 
             <Grid Grid.Row="1" Grid.Column="2">

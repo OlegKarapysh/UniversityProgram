@@ -20,10 +20,9 @@ public class DeleteGroupCommand : ICommand
 
     public void Execute(object? parameter)
     {
-        var removedIndex = _mainWindow.GroupNames.IndexOf(_mainWindow.SelectedGroup);
-        _mainWindow.RemoveCurrentGroup();
-        _mainWindow.SelectedGroup = removedIndex > 0 ? _mainWindow.GroupNames[removedIndex - 1] : 
-            _mainWindow.GroupNames.Count > 0 ? _mainWindow.GroupNames[removedIndex] : null;
+        var indexOfRemoved = _mainWindow.RemoveCurrentGroup();
+        _mainWindow.SelectedGroup = indexOfRemoved > 0 ? _mainWindow.GroupNames[indexOfRemoved - 1] : 
+            _mainWindow.GroupNames.Count > 0 ? _mainWindow.GroupNames[indexOfRemoved] : null;
     }
 
 }

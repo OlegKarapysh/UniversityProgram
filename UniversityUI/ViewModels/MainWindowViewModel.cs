@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using UniversityClassLibrary.DynamicArray;
@@ -24,6 +25,16 @@ public class MainWindowViewModel : ViewModelBase
         {
             _isFacultiesEnabled = value;
             OnPropertyChanged(nameof(IsFacultiesEnabled));
+        }
+    }
+
+    public bool IsFilterEnabled
+    {
+        get => _isFilterEnabled;
+        set
+        {
+            _isFilterEnabled = value;
+            OnPropertyChanged(nameof(IsFilterEnabled));
         }
     }
 
@@ -54,6 +65,7 @@ public class MainWindowViewModel : ViewModelBase
         {
             _selectedFaculty = value;
             RefreshObservableGroups(_currentFaculty = GetFacultyByName(value));
+            RefreshFilter();
             OnPropertyChanged(nameof(SelectedFaculty));
         }
     }
@@ -82,6 +94,7 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     private bool _isFacultiesEnabled;
+    private bool _isFilterEnabled;
     private string? _filter;
     private string? _selectedFaculty;
     private string? _selectedGroup;
@@ -99,6 +112,7 @@ public class MainWindowViewModel : ViewModelBase
         RefreshObservableFaculties();
         RefreshFacultiesEnabled();
         RefreshObservableGroups(_faculties.FirstOrDefault());
+        RefreshFilter();
         SelectedFaculty = FacultyNames.FirstOrDefault();
         SelectedGroup = GroupNames.FirstOrDefault();
         AddFacultyCommand = new AddFacultyCommand(this);
@@ -133,6 +147,7 @@ public class MainWindowViewModel : ViewModelBase
         
         _currentFaculty!.Add(group);
         _currentFaculty.Ordering(_currentFaculty.Count - 1);
+        RefreshFilter();
         RefreshObservableGroups(_currentFaculty);
         return true;
     }
@@ -154,24 +169,38 @@ public class MainWindowViewModel : ViewModelBase
         _currentGroup!.Name = newName;
         _currentFaculty!.Ordering(_currentFaculty.IndexOf(_currentGroup));
         RefreshObservableGroups(_currentFaculty);
+        Filter = string.Empty;
         return true;
     }
 
-    public void RemoveCurrentFaculty()
+    public int RemoveCurrentFaculty()
     {
-        if (_currentFaculty is null) return;
-        
-        _faculties.Remove(_currentFaculty);
-        FacultyNames.Remove(_currentFaculty.Name);
+        if (_currentFaculty is null) return DynamicArray<int>.ItemNotFound;
+
+        var name = _currentFaculty.Name;
+        var indexOfRemovedFaculty = _faculties.IndexOf(_currentFaculty);
+        _faculties.RemoveAt(indexOfRemovedFaculty);
+        FacultyNames.Remove(name);
         RefreshFacultiesEnabled();
+        return indexOfRemovedFaculty;
     }
 
-    public void RemoveCurrentGroup()
+    public int RemoveCurrentGroup()
     {
-        if (_currentFaculty is null || _currentGroup is null) return;
+        if (_currentFaculty is null || _currentGroup is null) return DynamicArray<int>.ItemNotFound;
 
-        _currentFaculty.Remove(_currentGroup);
-        GroupNames.Remove(_currentGroup.Name);
+        var name = _currentGroup.Name;
+        var indexOfRemovedGroup = _currentFaculty.IndexOf(_currentGroup);
+        _currentFaculty.RemoveAt(indexOfRemovedGroup);
+        RefreshFilter();
+        GroupNames.Remove(name);
+        return indexOfRemovedGroup;
+    }
+
+    private void RefreshFilter()
+    {
+        Filter = string.Empty;
+        IsFilterEnabled = _currentFaculty?.Count > 0;
     }
 
     private bool FacultyExists(string name) => GetFacultyByName(name) is not null;
@@ -184,11 +213,11 @@ public class MainWindowViewModel : ViewModelBase
             _faculties.Select(f => f.Name));
 
     private void RefreshFacultiesEnabled() => IsFacultiesEnabled = FacultyNames.Count > 0;
-    
+
     private void RefreshObservableGroups(NamedArray<NamedArray<Student>>? faculty) =>
         GroupNames = new ObservableCollection<string>(
             faculty?
                 .Select(g => g.Name)
-                .Where(g => g.StartsWith(Filter ?? ""))
+                .Where(g => g.StartsWith(Filter ?? string.Empty))
             ?? Enumerable.Empty<string>());
 }
