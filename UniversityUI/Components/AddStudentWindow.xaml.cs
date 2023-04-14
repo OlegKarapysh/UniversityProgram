@@ -51,28 +51,23 @@ public partial class AddStudentWindow : Window
 
     private void OkButton_OnClick(object sender, RoutedEventArgs e)
     {
-        foreach (var inputTextBox in _textBoxes)
-        {
-            if (Validation.GetHasError(inputTextBox))
-            {
-                ShowInvalidStudentMessageBox();
-                return;
-            }
-        }
-        OnStudentSubmitted();
-        Close();
+        if (TrySubmitStudent()) Close();
     }
+    
+    private void NextButton_OnClick(object sender, RoutedEventArgs e) => TrySubmitStudent();
 
-    private void OnStudentSubmitted()
+    private bool OnStudentSubmitted()
     {
         try
         {
             _student = _studentViewModel.GetStudent();
             StudentSubmitted?.Invoke(this, _student);
+            return true;
         }
         catch (ArgumentException e)
         {
             ShowInvalidStudentMessageBox();
+            return false;
         }
     }
 
@@ -80,4 +75,17 @@ public partial class AddStudentWindow : Window
         MessageBox.Show(
             "Student info is not valid! Fix all validation issues first.",
             "Validation failed", MessageBoxButton.OK, MessageBoxImage.Error);
+
+    private bool TrySubmitStudent()
+    {
+        foreach (var inputTextBox in _textBoxes)
+        {
+            if (Validation.GetHasError(inputTextBox))
+            {
+                ShowInvalidStudentMessageBox();
+                return false;
+            }
+        }
+        return OnStudentSubmitted();
+    }
 }
