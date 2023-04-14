@@ -82,7 +82,7 @@ public class Student : IStudent
 
     public override string ToString() => 
         $"{Surname} {Name}" + 
-        (string.IsNullOrEmpty(Patronymic) ? "" : $"{Patronymic}");
+        (string.IsNullOrEmpty(Patronymic) ? "" : $" {Patronymic}");
 
     
     private float TrimMark(float mark) => mark > 100 ? 100 : mark < 0 ? 0 : mark;

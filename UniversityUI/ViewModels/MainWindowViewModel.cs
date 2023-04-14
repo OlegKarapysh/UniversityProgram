@@ -19,6 +19,7 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand ChangeGroupCommand { get; }
     public ICommand AddStudentCommand { get; }
     public ICommand DeleteStudentCommand { get; }
+    public ICommand ChangeStudentCommand { get; }
 
     public bool IsFacultiesEnabled
     {
@@ -124,8 +125,8 @@ public class MainWindowViewModel : ViewModelBase
         set
         {
             _selectedStudent = value;
-            _currentStudent = GetStudentByName(value, _currentGroup);
-            RefreshObservableStudentInfo(_currentStudent);
+            CurrentStudent = GetStudentByName(value, _currentGroup);
+            RefreshObservableStudentInfo(CurrentStudent);
             OnPropertyChanged(nameof(SelectedStudent));
         }
     }
@@ -152,7 +153,8 @@ public class MainWindowViewModel : ViewModelBase
             SelectedStudent = StudentNames.FirstOrDefault();
         }
     }
-
+    
+    public Student? CurrentStudent;
     private bool _isFacultiesEnabled;
     private bool _isFilterEnabled;
     private bool _isStudentFilterEnabled;
@@ -164,7 +166,6 @@ public class MainWindowViewModel : ViewModelBase
     private string? _selectedStudent;
     private NamedArray<NamedArray<Student>>? _currentFaculty;
     private NamedArray<Student>? _currentGroup;
-    private Student? _currentStudent;
     private ObservableCollection<string> _facultyNames;
     private ObservableCollection<string> _groupNames;
     private ObservableCollection<string> _studentNames;
@@ -190,6 +191,7 @@ public class MainWindowViewModel : ViewModelBase
         ChangeGroupCommand = new ChangeGroupCommand(this);
         AddStudentCommand = new AddStudentCommand(this);
         DeleteStudentCommand = new DeleteStudentCommand(this);
+        ChangeStudentCommand = new ChangeStudentCommand(this);
     }
 
     public NamedArray<NamedArray<Student>>? GetFacultyByName(string? name) => 
@@ -252,6 +254,20 @@ public class MainWindowViewModel : ViewModelBase
         return true;
     }
 
+    public void ChangeCurrentStudent(Student student)
+    {
+        CurrentStudent!.Surname = student.Surname;
+        CurrentStudent!.Name = student.Name;
+        CurrentStudent!.Patronymic = student.Patronymic;
+        CurrentStudent!.AverageMark = student.AverageMark;
+        CurrentStudent!.BirthYear = student.BirthYear;
+        _currentGroup!.Ordering(_currentGroup.IndexOf(CurrentStudent));
+        RefreshObservableStudents(_currentGroup);
+        RefreshObservableStudentInfo(CurrentStudent);
+        StudentFilter = string.Empty;
+        SelectedStudent = student.ToString();
+    }
+
     public int RemoveCurrentFaculty()
     {
         if (_currentFaculty is null) return DynamicArray<int>.ItemNotFound;
@@ -278,14 +294,14 @@ public class MainWindowViewModel : ViewModelBase
 
     public int RemoveCurrentStudent()
     {
-        if (_currentFaculty is null || _currentGroup is null || _currentStudent is null)
+        if (_currentFaculty is null || _currentGroup is null || CurrentStudent is null)
         {
             return DynamicArray<int>.ItemNotFound;
         }
         
-        var studentName = _currentStudent.ToString();
+        var studentName = CurrentStudent.ToString();
         // TODO: use IndexOfBinary method for binary search.
-        var indexOfRemovedStudent = _currentGroup.IndexOf(_currentStudent);
+        var indexOfRemovedStudent = _currentGroup.IndexOf(CurrentStudent);
         _currentGroup.RemoveAt(indexOfRemovedStudent);
         RefreshStudentFilter();
         StudentNames.Remove(studentName);

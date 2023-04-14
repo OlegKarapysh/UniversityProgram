@@ -225,14 +225,13 @@
                             Command="{Binding DeleteStudentCommand}"/>
                     <Button Grid.Row="3" Grid.Column="0" x:Name="ChangeStudentButton"
                             Margin="5"
-                            IsEnabled="True"
                             Content="Change _student..."
-                            Click="ChangeStudentButton_OnClick"/>
+                            Command="{Binding ChangeStudentCommand}"/>
                 </Grid>
             </GroupBox>
             
             <Button Grid.Row="2" Grid.Column="0" 
-                    Content="_Exit" Margin="5 25 5 5"
+                    Content="_Exit" Margin="5 10 5 5"
                     Click="ExitButton_Click"/>
         </Grid>
     </Grid>
