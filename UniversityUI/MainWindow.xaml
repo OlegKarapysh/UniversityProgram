@@ -155,8 +155,7 @@
                          IsEnabled="False"
                          Margin="5"/>
                 <ListBox Grid.Row="2" Grid.Column="0" 
-                         Margin="5"
-                         IsEnabled="False"/>
+                         Margin="5"/>
             </Grid>
         </Grid>
 
@@ -203,14 +202,14 @@
                     <Button Grid.Row="1" Grid.Column="0" x:Name="AddStudentButton"
                             Margin="5"
                             Content="Add _student..." 
-                            IsEnabled="False"
+                            IsEnabled="True"
                             Click="AddStudentButton_OnClick"/>
                     <Button Grid.Row="2" Grid.Column="0"
                             IsEnabled="False"
                             Content="Delete _student" Margin="5"/>
                     <Button Grid.Row="3" Grid.Column="0" x:Name="ChangeStudentButton"
                             Margin="5"
-                            IsEnabled="False"
+                            IsEnabled="True"
                             Content="Change _student..."
                             Click="ChangeStudentButton_OnClick"/>
                 </Grid>

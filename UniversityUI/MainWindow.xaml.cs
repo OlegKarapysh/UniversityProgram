@@ -51,31 +51,18 @@ public partial class MainWindow : Window
 
     private void AddStudentButton_OnClick(object sender, RoutedEventArgs e)
     {
-        var addStudentWindow = new AddStudentWindow();
+        var addStudentWindow = new AddStudentWindow(
+            "Add student", false, 
+            new Student("name", "surname", "patro"));
         addStudentWindow.ShowDialog();
     }
 
     private void ChangeStudentButton_OnClick(object sender, RoutedEventArgs e)
     {
-        var changeStudentWindow = new ChangeStudentWindow();
+        var changeStudentWindow = new AddStudentWindow(
+            "Change student", true, 
+            new Student("name", "surname", "patro"));
         changeStudentWindow.ShowDialog();
-    }
-
-    private void AddGroupButton_OnClick(object sender, RoutedEventArgs e)
-    {
-        var addGroupWindow = new AddFacultyGroupWindow("Add group");
-        addGroupWindow.ShowDialog();
-    }
-
-    private void ChangeGroupButton_OnClick(object sender, RoutedEventArgs e)
-    {
-        var changeGroupWindow = new AddFacultyGroupWindow("Change group", "old group name");
-        changeGroupWindow.ShowDialog();
-    }
-
-    private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
-    {
-        GroupsListBox.SelectedItem = ((TextBlock)sender).Text;
     }
 }
 
