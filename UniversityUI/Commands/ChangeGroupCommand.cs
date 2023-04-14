@@ -27,6 +27,8 @@ public class ChangeGroupCommand : ICommand
             "Change group", oldName);
         changeGroupWindow.NewNameSet += (_, newName) =>
         {
+            var selectedStudent = _mainWindow.SelectedStudent;
+            var studentFilter = _mainWindow.StudentFilter;
             if (changeGroupWindow.IsNameWrong = !_mainWindow.RenameCurrentGroup(newName))
             {
                 MessageBox.Show(
@@ -36,8 +38,9 @@ public class ChangeGroupCommand : ICommand
                 return;
             }
             _mainWindow.SelectedGroup = newName;
+            _mainWindow.StudentFilter = studentFilter;
+            _mainWindow.SelectedStudent = selectedStudent;
         };
         changeGroupWindow.ShowDialog();
     }
-
 }

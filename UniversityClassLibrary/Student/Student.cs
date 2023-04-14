@@ -81,8 +81,8 @@ public class Student : IStudent
     public override int GetHashCode() => HashFNV.GetHashForStrings(Surname, Name, Patronymic);
 
     public override string ToString() => 
-        $"Student surname: {Surname}, name: {Name}" + 
-        (Patronymic is null ? "" : $", patronymic: {Patronymic}");
+        $"{Surname} {Name}" + 
+        (string.IsNullOrEmpty(Patronymic) ? "" : $"{Patronymic}");
 
     
     private float TrimMark(float mark) => mark > 100 ? 100 : mark < 0 ? 0 : mark;

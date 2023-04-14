@@ -133,6 +133,7 @@
                 <ListBox Grid.Row="2" Grid.Column="0" x:Name="GroupsListBox"
                          Margin="5"
                          SelectionMode="Single"
+                         IsEnabled="{Binding IsFilterEnabled}"
                          ItemsSource="{Binding GroupNames, UpdateSourceTrigger=PropertyChanged}"
                          SelectedItem="{Binding SelectedGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 </ListBox>
@@ -152,10 +153,14 @@
                            HorizontalAlignment="Center" Margin="0 15 0 5"
                            TextWrapping="Wrap"/>
                 <TextBox Grid.Row="1" Grid.Column="0" x:Name="StudentsFilterTextBox"
-                         IsEnabled="False"
-                         Margin="5"/>
+                         Margin="5"
+                         IsEnabled="{Binding IsStudentFilterEnabled}"
+                         Text="{Binding StudentFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <ListBox Grid.Row="2" Grid.Column="0" 
-                         Margin="5"/>
+                         Margin="5"
+                         IsEnabled="{Binding IsStudentFilterEnabled}"
+                         ItemsSource="{Binding StudentNames, UpdateSourceTrigger=PropertyChanged}"
+                         SelectedItem="{Binding SelectedStudent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
         </Grid>
 
@@ -203,7 +208,7 @@
                             Margin="5"
                             Content="Add _student..." 
                             IsEnabled="True"
-                            Click="AddStudentButton_OnClick"/>
+                            Command="{Binding AddStudentCommand}"/>
                     <Button Grid.Row="2" Grid.Column="0"
                             IsEnabled="False"
                             Content="Delete _student" Margin="5"/>

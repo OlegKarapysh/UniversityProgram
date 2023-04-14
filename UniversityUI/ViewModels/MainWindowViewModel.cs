@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using UniversityClassLibrary.DynamicArray;
@@ -17,6 +16,7 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand AddGroupCommand { get; }
     public ICommand DeleteGroupCommand { get; }
     public ICommand ChangeGroupCommand { get; }
+    public ICommand AddStudentCommand { get; }
 
     public bool IsFacultiesEnabled
     {
@@ -27,7 +27,6 @@ public class MainWindowViewModel : ViewModelBase
             OnPropertyChanged(nameof(IsFacultiesEnabled));
         }
     }
-
     public bool IsFilterEnabled
     {
         get => _isFilterEnabled;
@@ -35,6 +34,15 @@ public class MainWindowViewModel : ViewModelBase
         {
             _isFilterEnabled = value;
             OnPropertyChanged(nameof(IsFilterEnabled));
+        }
+    }
+    public bool IsStudentFilterEnabled
+    {
+        get => _isStudentFilterEnabled;
+        set
+        {
+            _isStudentFilterEnabled = value;
+            OnPropertyChanged(nameof(IsStudentFilterEnabled));
         }
     }
 
@@ -47,7 +55,6 @@ public class MainWindowViewModel : ViewModelBase
             OnPropertyChanged(nameof(FacultyNames));
         }
     }
-    
     public ObservableCollection<string> GroupNames
     {
         get => _groupNames;
@@ -55,6 +62,15 @@ public class MainWindowViewModel : ViewModelBase
         {
             _groupNames = value;
             OnPropertyChanged(nameof(GroupNames));
+        }
+    }
+    public ObservableCollection<string> StudentNames
+    {
+        get => _studentNames;
+        set
+        {
+            _studentNames = value;
+            OnPropertyChanged(nameof(StudentNames));
         }
     }
 
@@ -69,15 +85,25 @@ public class MainWindowViewModel : ViewModelBase
             OnPropertyChanged(nameof(SelectedFaculty));
         }
     }
-    
     public string? SelectedGroup
     {
         get => _selectedGroup;
         set
         {
             _selectedGroup = value;
-            _currentGroup = GetGroupByName(value, _currentFaculty);
+            RefreshObservableStudents(_currentGroup = GetGroupByName(value, _currentFaculty));
+            RefreshStudentFilter();
             OnPropertyChanged(nameof(SelectedGroup));
+        }
+    }
+    public string? SelectedStudent
+    {
+        get => _selectedStudent;
+        set
+        {
+            _selectedStudent = value;
+            _currentStudent = GetStudentByName(value, _currentGroup);
+            OnPropertyChanged(nameof(SelectedStudent));
         }
     }
 
@@ -92,16 +118,32 @@ public class MainWindowViewModel : ViewModelBase
             SelectedGroup = GroupNames.FirstOrDefault();
         }
     }
+    public string? StudentFilter
+    {
+        get => _studentFilter;
+        set
+        {
+            _studentFilter = value;
+            OnPropertyChanged(nameof(StudentFilter));
+            RefreshObservableStudents(_currentGroup);
+            SelectedStudent = StudentNames.FirstOrDefault();
+        }
+    }
 
     private bool _isFacultiesEnabled;
     private bool _isFilterEnabled;
+    private bool _isStudentFilterEnabled;
     private string? _filter;
+    private string? _studentFilter;
     private string? _selectedFaculty;
     private string? _selectedGroup;
+    private string? _selectedStudent;
     private NamedArray<NamedArray<Student>>? _currentFaculty;
     private NamedArray<Student>? _currentGroup;
+    private Student? _currentStudent;
     private ObservableCollection<string> _facultyNames;
     private ObservableCollection<string> _groupNames;
+    private ObservableCollection<string> _studentNames;
     private readonly DynamicArray<NamedArray<NamedArray<Student>>> _faculties;
 
     public MainWindowViewModel() : this(null) { }
@@ -121,6 +163,7 @@ public class MainWindowViewModel : ViewModelBase
         AddGroupCommand = new AddGroupCommand(this);
         DeleteGroupCommand = new DeleteGroupCommand(this);
         ChangeGroupCommand = new ChangeGroupCommand(this);
+        AddStudentCommand = new AddStudentCommand(this);
     }
 
     public NamedArray<NamedArray<Student>>? GetFacultyByName(string? name) => 
@@ -129,6 +172,9 @@ public class MainWindowViewModel : ViewModelBase
     public NamedArray<Student>? GetGroupByName(
         string? groupName, NamedArray<NamedArray<Student>>? faculty) => 
             faculty?.FirstOrDefault(g => g.Name == groupName);
+    
+    public Student? GetStudentByName(string? name, NamedArray<Student>? group) => 
+        group?.FirstOrDefault(s => s.ToString() == name);
 
     public bool AddFaculty(NamedArray<NamedArray<Student>> faculty)
     {
@@ -150,6 +196,13 @@ public class MainWindowViewModel : ViewModelBase
         RefreshFilter();
         RefreshObservableGroups(_currentFaculty);
         return true;
+    }
+
+    public void AddStudent(Student student)
+    {
+        _currentGroup!.AddSorted(student);
+        RefreshStudentFilter();
+        RefreshObservableStudents(_currentGroup);
     }
     
     public bool RenameCurrentFaculty(string newName)
@@ -197,27 +250,43 @@ public class MainWindowViewModel : ViewModelBase
         return indexOfRemovedGroup;
     }
 
-    private void RefreshFilter()
-    {
-        Filter = string.Empty;
-        IsFilterEnabled = _currentFaculty?.Count > 0;
-    }
-
     private bool FacultyExists(string name) => GetFacultyByName(name) is not null;
 
     private bool GroupExists(string group, NamedArray<NamedArray<Student>>? faculty) =>
         GetGroupByName(group, faculty) is not null;
 
+    private bool StudentExists(string name, NamedArray<Student>? group) =>
+        GetStudentByName(name, group) is not null;
+
     private void RefreshObservableFaculties() =>
         FacultyNames = new ObservableCollection<string>(
             _faculties.Select(f => f.Name));
-
-    private void RefreshFacultiesEnabled() => IsFacultiesEnabled = FacultyNames.Count > 0;
-
+    
     private void RefreshObservableGroups(NamedArray<NamedArray<Student>>? faculty) =>
         GroupNames = new ObservableCollection<string>(
             faculty?
                 .Select(g => g.Name)
                 .Where(g => g.StartsWith(Filter ?? string.Empty))
             ?? Enumerable.Empty<string>());
+
+    private void RefreshObservableStudents(NamedArray<Student>? group) =>
+        StudentNames = new ObservableCollection<string>(
+            group?
+                .Select(s => s.ToString())
+                .Where(s => s.StartsWith(StudentFilter ?? string.Empty))
+            ?? Enumerable.Empty<string>());
+    
+    private void RefreshFacultiesEnabled() => IsFacultiesEnabled = FacultyNames.Count > 0;
+    
+    private void RefreshFilter()
+    {
+        Filter = string.Empty;
+        IsFilterEnabled = _currentFaculty?.Count > 0;
+    }
+
+    private void RefreshStudentFilter()
+    {
+        StudentFilter = string.Empty;
+        IsStudentFilterEnabled = _currentGroup?.Count > 0;
+    }
 }

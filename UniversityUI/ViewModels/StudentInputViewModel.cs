@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using UniversityClassLibrary.Student;
 
 namespace UniversityUI.ViewModels;
@@ -23,7 +24,7 @@ public class StudentInputViewModel : ViewModelBase
             OnPropertyChanged(nameof(Name));
         }
     }
-    public string Patronymic
+    public string? Patronymic
     {
         get => _patronymic;
         set
@@ -53,7 +54,7 @@ public class StudentInputViewModel : ViewModelBase
 
     private string _surname;
     private string _name;
-    private string _patronymic;
+    private string? _patronymic;
     private string _birthYear;
     private string _averageMark;
 
@@ -67,5 +68,22 @@ public class StudentInputViewModel : ViewModelBase
         Patronymic = stud.Patronymic ?? string.Empty;
         BirthYear = stud.BirthYear.ToString();
         AverageMark = stud.AverageMark.ToString(CultureInfo.InvariantCulture);
+    }
+
+    public Student GetStudent()
+    {
+        try
+        {
+            return new Student(_name, _surname, _patronymic)
+            {
+                AverageMark = float.Parse(_averageMark),
+                BirthYear = ushort.Parse(_birthYear)
+            };
+        }
+        catch (Exception e)
+        {
+            throw new ArgumentException("Student info is not valid!", e);
+        }
+        
     }
 }
