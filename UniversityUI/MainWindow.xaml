@@ -10,7 +10,8 @@
         Height="700" Width="1300"
         MinHeight="380" MinWidth="675"
         WindowStartupLocation="CenterScreen" 
-        FontSize="18">
+        FontSize="18"
+        FontFamily="Consolas">
     <!-- <Window.Resources> -->
     <!--     <vm:MainWindowViewModel x:Key="mainViewModel"/> -->
     <!-- </Window.Resources> -->
@@ -63,7 +64,8 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Grid.Row="1" Grid.Column="0">
+            <GroupBox Grid.Row="1" Grid.Column="0"
+                      Margin="0 0 0 5">
                 <GroupBox.Header>Group options</GroupBox.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -187,11 +189,19 @@
                            HorizontalAlignment="Center" Margin="0 0 0 5"
                            TextWrapping="Wrap"/>
                 <ListBox Grid.Row="1" Grid.Column="0"
-                         Margin="5" MinHeight="50"
-                         IsEnabled="False"/>
+                         Margin="5"
+                         IsEnabled="{Binding IsStudentInfoEnabled}"
+                         ItemsSource="{Binding SelectedStudentInfo}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="Focusable" Value="False"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
             </Grid>
 
-            <GroupBox Grid.Row="1" Grid.Column="0">
+            <GroupBox Grid.Row="1" Grid.Column="0"
+                      Margin="2">
                 <GroupBox.Header>Student options</GroupBox.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -209,9 +219,10 @@
                             Content="Add _student..." 
                             IsEnabled="True"
                             Command="{Binding AddStudentCommand}"/>
-                    <Button Grid.Row="2" Grid.Column="0"
-                            IsEnabled="False"
-                            Content="Delete _student" Margin="5"/>
+                    <Button Grid.Row="2" Grid.Column="0" x:Name="DeleteStudentButton"
+                            Margin="5"
+                            Content="Delete _student" 
+                            Command="{Binding DeleteStudentCommand}"/>
                     <Button Grid.Row="3" Grid.Column="0" x:Name="ChangeStudentButton"
                             Margin="5"
                             IsEnabled="True"

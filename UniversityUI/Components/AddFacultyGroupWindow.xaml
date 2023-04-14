@@ -10,6 +10,7 @@
         MinHeight="250" MinWidth="300"
         WindowStartupLocation="CenterScreen"
         FontSize="20"
+        FontFamily="Consolas"
         ResizeMode="CanMinimize"
         Loaded="AddFacultyGroupWindow_OnLoaded">
     <Grid>

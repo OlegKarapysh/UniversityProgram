@@ -13,7 +13,7 @@ public class PatronymicValidationRule : ValidationRule
         if (!Regex.IsMatch(value?.ToString() ?? string.Empty, PatronymicPattern))
         {
             return new ValidationResult(false,
-                "Name must contain letters and start with a capital letter!");
+                "Name must contain up to 30 letters and start with a capital letter!");
         }
 
         return ValidationResult.ValidResult;

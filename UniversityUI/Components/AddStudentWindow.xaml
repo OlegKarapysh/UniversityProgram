@@ -10,6 +10,7 @@
         MinHeight="430" MinWidth="800"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize"
+        FontFamily="Consolas"
         FontSize="18"
         Loaded="AddStudentWindow_OnLoaded">
     <Window.Resources>
@@ -22,7 +23,9 @@
                                 <AdornedElementPlaceholder/>
                             </Border>
                             <TextBlock Text="{Binding [0].ErrorContent}" 
-                                       Foreground="Red" FontSize="13" Margin="3"/>
+                                       Foreground="Red" 
+                                       FontSize="13" FontFamily="SegoeUI" FontStyle="Italic"
+                                       Margin="3"/>
                         </StackPanel>
                     </ControlTemplate>
                 </Setter.Value>

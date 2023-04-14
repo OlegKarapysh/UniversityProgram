@@ -21,7 +21,7 @@ public class YearValidationRule : ValidationRule
         if (year < MinYear || year > DateTime.Now.Year)
         {
             return new ValidationResult(false, 
-                $"Year must be between {MinYear} and {DateTime.Now.Year}.");
+                $"Year must be between {MinYear} and {DateTime.Now.Year}!");
         }
 
         return ValidationResult.ValidResult;

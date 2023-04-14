@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
 using UniversityClassLibrary.DynamicArray;
@@ -17,6 +18,7 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand DeleteGroupCommand { get; }
     public ICommand ChangeGroupCommand { get; }
     public ICommand AddStudentCommand { get; }
+    public ICommand DeleteStudentCommand { get; }
 
     public bool IsFacultiesEnabled
     {
@@ -46,6 +48,16 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
+    public bool IsStudentInfoEnabled
+    {
+        get => _isStudentInfoEnabled;
+        set
+        {
+            _isStudentInfoEnabled = value;
+            OnPropertyChanged(nameof(IsStudentInfoEnabled));
+        }
+    }
+
     public ObservableCollection<string> FacultyNames
     {
         get => _facultyNames;
@@ -71,6 +83,16 @@ public class MainWindowViewModel : ViewModelBase
         {
             _studentNames = value;
             OnPropertyChanged(nameof(StudentNames));
+        }
+    }
+
+    public ObservableCollection<string> SelectedStudentInfo
+    {
+        get => _selectedStudentInfo;
+        set
+        {
+            _selectedStudentInfo = value;
+            OnPropertyChanged(nameof(SelectedStudentInfo));
         }
     }
 
@@ -103,6 +125,7 @@ public class MainWindowViewModel : ViewModelBase
         {
             _selectedStudent = value;
             _currentStudent = GetStudentByName(value, _currentGroup);
+            RefreshObservableStudentInfo(_currentStudent);
             OnPropertyChanged(nameof(SelectedStudent));
         }
     }
@@ -133,6 +156,7 @@ public class MainWindowViewModel : ViewModelBase
     private bool _isFacultiesEnabled;
     private bool _isFilterEnabled;
     private bool _isStudentFilterEnabled;
+    private bool _isStudentInfoEnabled;
     private string? _filter;
     private string? _studentFilter;
     private string? _selectedFaculty;
@@ -144,6 +168,7 @@ public class MainWindowViewModel : ViewModelBase
     private ObservableCollection<string> _facultyNames;
     private ObservableCollection<string> _groupNames;
     private ObservableCollection<string> _studentNames;
+    private ObservableCollection<string> _selectedStudentInfo;
     private readonly DynamicArray<NamedArray<NamedArray<Student>>> _faculties;
 
     public MainWindowViewModel() : this(null) { }
@@ -164,6 +189,7 @@ public class MainWindowViewModel : ViewModelBase
         DeleteGroupCommand = new DeleteGroupCommand(this);
         ChangeGroupCommand = new ChangeGroupCommand(this);
         AddStudentCommand = new AddStudentCommand(this);
+        DeleteStudentCommand = new DeleteStudentCommand(this);
     }
 
     public NamedArray<NamedArray<Student>>? GetFacultyByName(string? name) => 
@@ -250,6 +276,22 @@ public class MainWindowViewModel : ViewModelBase
         return indexOfRemovedGroup;
     }
 
+    public int RemoveCurrentStudent()
+    {
+        if (_currentFaculty is null || _currentGroup is null || _currentStudent is null)
+        {
+            return DynamicArray<int>.ItemNotFound;
+        }
+        
+        var studentName = _currentStudent.ToString();
+        // TODO: use IndexOfBinary method for binary search.
+        var indexOfRemovedStudent = _currentGroup.IndexOf(_currentStudent);
+        _currentGroup.RemoveAt(indexOfRemovedStudent);
+        RefreshStudentFilter();
+        StudentNames.Remove(studentName);
+        return indexOfRemovedStudent;
+    }
+
     private bool FacultyExists(string name) => GetFacultyByName(name) is not null;
 
     private bool GroupExists(string group, NamedArray<NamedArray<Student>>? faculty) =>
@@ -275,6 +317,32 @@ public class MainWindowViewModel : ViewModelBase
                 .Select(s => s.ToString())
                 .Where(s => s.StartsWith(StudentFilter ?? string.Empty))
             ?? Enumerable.Empty<string>());
+
+    private void RefreshObservableStudentInfo(Student? student)
+    {
+        if (student is null)
+        {
+            SelectedStudentInfo = new ObservableCollection<string>();
+            IsStudentInfoEnabled = false;
+            return;
+        }
+        const byte studentPropertiesCount = 5;
+        const byte surnameIndex = 0;
+        const byte nameIndex = 1;
+        const byte patronymicIndex = 2;
+        const byte birthYearIndex = 3;
+        const byte averageMarkIndex = 4;
+        const byte padding = 13;
+        var info = new string[studentPropertiesCount];
+        info[surnameIndex] =     "Surname".PadRight(padding) + ": " + student.Surname;
+        info[nameIndex] =        "Name".PadRight(padding) + ": " + student.Name;
+        info[patronymicIndex] =  "Patronymic".PadRight(padding) + ": " + (student.Patronymic ?? string.Empty);
+        info[birthYearIndex] =   "Birth year".PadRight(padding) + ": " + student.BirthYear;
+        info[averageMarkIndex] = "Average mark".PadRight(padding) + ": " + student.AverageMark.ToString(CultureInfo.InvariantCulture);
+
+        IsStudentInfoEnabled = true;
+        SelectedStudentInfo = new ObservableCollection<string>(info);
+    }
     
     private void RefreshFacultiesEnabled() => IsFacultiesEnabled = FacultyNames.Count > 0;
     
