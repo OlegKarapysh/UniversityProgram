@@ -11,4 +11,8 @@
     <ProjectReference Include="..\UniversityClassLibrary\UniversityClassLibrary.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="ViewModels\FacultyViewModel.cs" />
+  </ItemGroup>
+
 </Project>

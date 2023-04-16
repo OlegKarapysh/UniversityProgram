@@ -165,7 +165,6 @@
         
         <Button Grid.Row="2" Grid.Column="1" x:Name="OkButton"
                 Margin="20"
-                IsDefault="True"
                 Content="_Ok"
                 Click="OkButton_OnClick"/>
         <Button Grid.Row="2" Grid.Column="2" x:Name="NextButton"
@@ -174,6 +173,7 @@
                 Click="NextButton_OnClick"/>
         <Button Grid.Row="2" Grid.Column="3" x:Name="CancelButton"
                 Margin="20"
+                IsCancel="True"
                 Content="_Cancel"
                 Click="CancelButton_OnClick"/>
     </Grid>

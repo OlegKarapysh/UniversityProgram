@@ -10,11 +10,12 @@ public class MarkValidationRule : ValidationRule
     
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {
-        if (value is null || string.IsNullOrEmpty(value.ToString()))
+        if (string.IsNullOrEmpty(value?.ToString()))
         {
             return new ValidationResult(false, "This field is required!");
         }
-        if (!float.TryParse(value.ToString(), out var mark))
+        if (!float.TryParse(value.ToString(),NumberStyles.Float, 
+                CultureInfo.InvariantCulture, out var mark))
         {
             return new ValidationResult(false, "Mark must be a number!");
         }

@@ -50,6 +50,7 @@
                 IsDefault="True"
                 Click="OkButton_OnClick"/>
         <Button Grid.Row="2" Grid.Column="2" x:Name="CancelButton"
+                IsCancel="True"
                 Content="_Cancel" Margin="20 20 20 25"
                 Click="CancelButton_OnClick"/>
     </Grid>

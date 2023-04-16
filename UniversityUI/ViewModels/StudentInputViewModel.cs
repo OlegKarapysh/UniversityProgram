@@ -76,7 +76,7 @@ public class StudentInputViewModel : ViewModelBase
         {
             return new Student(_name, _surname, _patronymic)
             {
-                AverageMark = float.Parse(_averageMark),
+                AverageMark = float.Parse(_averageMark, NumberStyles.Float, CultureInfo.InvariantCulture),
                 BirthYear = ushort.Parse(_birthYear)
             };
         }

@@ -29,7 +29,7 @@ public partial class AddStudentWindow : Window
         DataContext = _studentViewModel;
         _textBoxes = new List<TextBox>
         {
-            NameTextBox, SurnameTextBox, PatronymicTextBox, AverageMarkTextBox, BirthYearTextBox
+            SurnameTextBox, NameTextBox, PatronymicTextBox, BirthYearTextBox, AverageMarkTextBox, 
         };
     }
 
@@ -37,14 +37,30 @@ public partial class AddStudentWindow : Window
 
     private void AddStudentWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
+        if (_isNextButtonHidden)
+        {
+            OkButton.IsDefault = true;
+        }
+        else
+        {
+            NextButton.IsDefault = true;
+        }
         Title = _name;
         SurnameTextBox.Focus();
         NextButton.Visibility = _isNextButtonHidden ? Visibility.Collapsed : Visibility.Visible;
         SurnameTextBox.Text = _student.Surname;
         NameTextBox.Text = _student.Name;
         PatronymicTextBox.Text = _student.Patronymic;
-        BirthYearTextBox.Text = _student.BirthYear.ToString();
-        AverageMarkTextBox.Text = _student.AverageMark.ToString(CultureInfo.InvariantCulture);
+        if (_student.Equals(new Student()))
+        {
+            BirthYearTextBox.Text = string.Empty;
+            AverageMarkTextBox.Text = string.Empty;
+        }
+        else
+        {
+            BirthYearTextBox.Text = _student.BirthYear.ToString();
+            AverageMarkTextBox.Text = _student.AverageMark.ToString(CultureInfo.InvariantCulture);
+        }
     }
 
     private void TextBox_OnFocus(object sender, RoutedEventArgs e) => ((TextBox)sender).SelectAll();
@@ -82,6 +98,8 @@ public partial class AddStudentWindow : Window
         {
             if (Validation.GetHasError(inputTextBox))
             {
+                inputTextBox.Focus();
+                inputTextBox.SelectAll();
                 ShowInvalidStudentMessageBox();
                 return false;
             }

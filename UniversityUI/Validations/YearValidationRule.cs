@@ -10,7 +10,7 @@ public class YearValidationRule : ValidationRule
 
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {
-        if (value is null || string.IsNullOrEmpty(value.ToString()))
+        if (string.IsNullOrEmpty(value?.ToString()))
         {
             return new ValidationResult(false, "This field is required!");
         }
