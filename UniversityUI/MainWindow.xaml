@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="University" 
         Height="700" Width="1300"
-        MinHeight="380" MinWidth="675"
+        MinHeight="420" MinWidth="750"
         WindowStartupLocation="CenterScreen" 
         FontSize="18"
         FontFamily="Consolas">
@@ -41,7 +41,30 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style TargetType="{x:Type MenuItem}">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="Gray" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="miOnHover" TargetType="{x:Type MenuItem}">
+            <Style.Triggers>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="IsSubmenuOpen" Value="True" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
+    
+    <Window.CommandBindings>
+        <CommandBinding Command="Help" Executed="Help_OnExecuted"/>
+        <CommandBinding Command="NavigateJournal" Executed="Mark_OnExecuted"/>
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="H" Modifiers="Alt" Command="Help"/>
+        <KeyBinding Key="M" Modifiers="Control" Command="NavigateJournal"/>
+    </Window.InputBindings>
 
     <!-- <Window.Resources> -->
     <!--     <vm:MainWindowViewModel x:Key="mainViewModel"/> -->
@@ -49,17 +72,46 @@
     <Grid>
         <!-- DataContext="{StaticResource mainViewModel}" -->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="25*"/>
             <ColumnDefinition Width="50*"/>
             <ColumnDefinition Width="25*"/>
-            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="20"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="15"/>
+            <RowDefinition Height="35"/>
             <RowDefinition Height="50*"/>
-            <RowDefinition Height="15"/>
+            <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
+        
+        <Menu Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3"
+              Height="25" VerticalAlignment="Top"
+              Background="Snow">
+            <MenuItem Style="{StaticResource miOnHover}">
+                <MenuItem.Header>
+                    <AccessText FontSize="18" FontFamily="Consolas">_Statistics</AccessText>
+                </MenuItem.Header>
+                <MenuItem Command="{Binding AverageMarkBySpecialtyCommand}"
+                          IsEnabled="{Binding IsFilterEnabled}"
+                          IsCheckable="{Binding IsFilterEnabled}">
+                    <MenuItem.Header>
+                        <AccessText FontSize="18" FontFamily="Consolas" 
+                                    xml:space="preserve" Text="Average _mark of group...    Ctrl + M"/>
+                    </MenuItem.Header>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem  Style="{StaticResource miOnHover}">
+                <MenuItem.Header>
+                    <AccessText FontSize="18" FontFamily="Consolas">_Help</AccessText>
+                </MenuItem.Header>
+                <MenuItem Command="{Binding HelpCommand}">
+                    <MenuItem.Header>
+                        <AccessText FontSize="18" FontFamily="Consolas" 
+                                    xml:space="preserve" Text="_About program...    F1"/>
+                    </MenuItem.Header>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
         
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.ColumnDefinitions>

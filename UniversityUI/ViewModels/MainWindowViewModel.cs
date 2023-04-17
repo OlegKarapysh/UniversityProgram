@@ -20,6 +20,8 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand AddStudentCommand { get; }
     public ICommand DeleteStudentCommand { get; }
     public ICommand ChangeStudentCommand { get; }
+    public ICommand HelpCommand { get; }
+    public ICommand AverageMarkBySpecialtyCommand { get; }
 
     public bool IsFacultiesEnabled
     {
@@ -36,6 +38,7 @@ public class MainWindowViewModel : ViewModelBase
         set
         {
             _isFilterEnabled = value;
+            IsAverageMarkEnabled = value;
             OnPropertyChanged(nameof(IsFilterEnabled));
         }
     }
@@ -153,6 +156,70 @@ public class MainWindowViewModel : ViewModelBase
             SelectedStudent = StudentNames.FirstOrDefault();
         }
     }
+
+    public string Specialty
+    {
+        get => _specialty;
+        set
+        {
+            _specialty = value;
+            RefreshMark(value);
+            OnPropertyChanged(nameof(Specialty));
+        }
+    }
+
+    private void RefreshMark(string value)
+    {
+        if (string.IsNullOrEmpty(value) || value.Length <= 1)
+        {
+            AverageMarkSpecialty = "";
+            return;
+        }
+        
+        if (_currentFaculty is null)
+        {
+            AverageMarkSpecialty = "No faculty found";
+            return;
+        }
+        
+        var groups = _currentFaculty?
+            .Where(g => g.Name.StartsWith(value))
+            .SelectMany(g => g);
+        if (groups?.Count() == 0)
+        {
+            AverageMarkSpecialty = "No groups found";
+            return;
+        }
+        var students = groups?.Select(s => s);
+        if (students?.Count() == 0)
+        {
+            AverageMarkSpecialty = "No students found";
+            return;
+        }
+
+        AverageMarkSpecialty = students!.Select(s => s.AverageMark)
+                                        .Average().ToString(CultureInfo.InvariantCulture);
+    }
+
+    public string AverageMarkSpecialty
+    {
+        get => _averageMarkSpecialty;
+        set
+        {
+            _averageMarkSpecialty = value;
+            OnPropertyChanged(nameof(AverageMarkSpecialty));
+        }
+    }
+
+    public bool IsAverageMarkEnabled
+    {
+        get => _isAverageMarkEnabled;
+        set
+        {
+            _isAverageMarkEnabled = value;
+            OnPropertyChanged(nameof(IsAverageMarkEnabled));
+        }
+    }
     
     public Student? CurrentStudent;
     private bool _isFacultiesEnabled;
@@ -171,6 +238,9 @@ public class MainWindowViewModel : ViewModelBase
     private ObservableCollection<string> _studentNames;
     private ObservableCollection<string> _selectedStudentInfo;
     private readonly DynamicArray<NamedArray<NamedArray<Student>>> _faculties;
+    private string _specialty;
+    private string _averageMarkSpecialty;
+    private bool _isAverageMarkEnabled;
 
     public MainWindowViewModel() : this(null) { }
 
@@ -192,6 +262,8 @@ public class MainWindowViewModel : ViewModelBase
         AddStudentCommand = new AddStudentCommand(this);
         DeleteStudentCommand = new DeleteStudentCommand(this);
         ChangeStudentCommand = new ChangeStudentCommand(this);
+        HelpCommand = new HelpCommand();
+        AverageMarkBySpecialtyCommand = new AverageMarkBySpecialtyCommand(this);
     }
 
     public NamedArray<NamedArray<Student>>? GetFacultyByName(string? name) => 

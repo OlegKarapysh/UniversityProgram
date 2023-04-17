@@ -32,8 +32,8 @@
             </Setter>
             <EventSetter Event="GotFocus" Handler="TextBox_OnFocus"/>
         </Style>
-
     </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="15"/>
